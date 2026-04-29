@@ -1,0 +1,6 @@
+{
+  "name": "Óculos Solidários",
+  "description": "Uma plataforma solidária para doação e troca de óculos de grau, promovendo acessibilidade visual e utilidade pública.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
