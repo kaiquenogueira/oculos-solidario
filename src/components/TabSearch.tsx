@@ -59,51 +59,22 @@ export function TabSearch({ onGoToSolidarity }: TabSearchProps) {
       </div>
 
       {/* Solidarity callout */}
-      <section
-        className="relative overflow-hidden p-5 mb-6 rounded-2xl grain-overlay"
-        style={{ background: 'var(--color-sage)', color: 'var(--color-paper)' }}
-      >
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-4 h-0.5 rounded-full" style={{ background: 'var(--color-sage-soft)' }} />
-            <span
-              className="text-xs tracking-wider uppercase font-medium"
-              style={{ color: 'var(--color-sage-soft)', fontFamily: 'var(--font-mono)', fontSize: '10px' }}
-            >
-              Programa Padrinho Visual
-            </span>
-          </div>
-          <h2
-            className="font-display text-2xl leading-tight"
-            style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
-          >
-            Tem a armação,<br/>
-            <span className="italic">faltam-lhe as lentes?</span>
-          </h2>
-          <p className="text-sm mt-3 max-w-[90%] opacity-85" style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
-            A rede solidária recebe sua receita médica e conecta você a um padrinho disposto a custear as lentes.
-          </p>
-          <button
-            onClick={onGoToSolidarity}
-            className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase py-2.5 px-4 rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.18)',
-              color: 'var(--color-paper)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-            }}
-          >
-            Conhecer o programa →
-          </button>
+      <section className="relative overflow-hidden mb-6 rounded-2xl" style={{ background: 'var(--color-sage)' }}>
+        {/* Background illustration */}
+        <div className="absolute inset-0">
+          <img src="/images/solidarity-hero.png" alt="" className="w-full h-full object-cover opacity-25" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(58,130,54,0.85) 0%, rgba(58,130,54,0.65) 100%)' }} />
         </div>
 
-        <span
-          className="absolute -right-3 -bottom-4 eye-mark opacity-10"
-          aria-hidden
-          style={{ color: 'var(--color-paper)', fontSize: '100px' }}
-        >
-          §
-        </span>
+        <div className="relative z-10 p-5" style={{ color: 'var(--color-paper)' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-4 h-0.5 rounded-full" style={{ background: 'var(--color-sage-soft)' }} />
+            <span className="text-xs tracking-wider uppercase font-medium" style={{ color: 'var(--color-sage-soft)', fontFamily: 'var(--font-mono)', fontSize: '10px' }}>Programa Padrinho Visual</span>
+          </div>
+          <h2 className="font-display text-2xl leading-tight" style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}>Tem a armação,<br/><span className="italic">faltam-lhe as lentes?</span></h2>
+          <p className="text-sm mt-3 max-w-[90%] opacity-85" style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>A rede solidária recebe sua receita médica e conecta você a um padrinho disposto a custear as lentes.</p>
+          <button onClick={onGoToSolidarity} className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase py-2.5 px-4 rounded-full" style={{ background: 'rgba(255,255,255,0.18)', color: 'var(--color-paper)', fontFamily: 'var(--font-mono)', fontSize: '11px', backdropFilter: 'blur(4px)' }}>Conhecer o programa →</button>
+        </div>
       </section>
 
       {/* Filter chips */}
@@ -126,17 +97,18 @@ export function TabSearch({ onGoToSolidarity }: TabSearchProps) {
         </div>
       </div>
 
-      {/* Empty — eye chart */}
+      {/* Empty — eye chart illustration */}
       <div className="text-center">
-        <div className="rounded-2xl py-10 px-6" style={{ background: 'var(--color-paper-2)' }}>
-          <p className="kicker mb-4 text-xs">— quadro de visão —</p>
-          <p className="eye-mark tracking-wider" style={{ color: 'var(--color-ink)', fontSize: '48px' }}>F P</p>
-          <p className="eye-mark mt-2 tracking-wider" style={{ color: 'var(--color-ink-2)', fontSize: '36px' }}>T O Z</p>
-          <p className="eye-mark mt-2 tracking-wider" style={{ color: 'var(--color-ink-3)', fontSize: '24px' }}>L P E D</p>
-          <p className="eye-mark mt-2 tracking-wider" style={{ color: 'var(--color-ink-4)', fontSize: '16px' }}>P E C F D</p>
-          <p className="text-sm mt-6 leading-relaxed" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
-            Use os filtros acima para encontrar<br/>óculos para sua necessidade.
-          </p>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-paper-2)' }}>
+          <div className="relative aspect-[4/5] overflow-hidden">
+            <img src="/images/eye-chart.png" alt="Quadro de visão" className="w-full h-full object-cover" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--color-paper-2) 0%, transparent 40%)' }} />
+          </div>
+          <div className="px-6 pb-6 -mt-8 relative z-10">
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
+              Use os filtros acima para encontrar<br/>óculos para sua necessidade.
+            </p>
+          </div>
         </div>
       </div>
     </div>

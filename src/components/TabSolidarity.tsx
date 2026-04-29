@@ -22,36 +22,25 @@ export function TabSolidarity({ prescriptionRequests, onSelectRequest, onOpenNew
         </p>
       </header>
 
-      {/* Manifesto card */}
-      <section
-        className="relative overflow-hidden p-5 mb-6 rounded-2xl grain-overlay"
-        style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-      >
-        <div className="relative z-10">
+      {/* Manifesto card with image */}
+      <section className="relative overflow-hidden mb-6 rounded-2xl" style={{ background: 'var(--color-ink)' }}>
+        <div className="absolute inset-0">
+          <img src="/images/solidarity-hero.png" alt="" className="w-full h-full object-cover opacity-20" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(24,20,15,0.5) 0%, rgba(24,20,15,0.9) 100%)' }} />
+        </div>
+
+        <div className="relative z-10 p-5" style={{ color: 'var(--color-paper)' }}>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-4 h-0.5 rounded-full" style={{ background: 'var(--color-sage-soft)' }} />
-            <span className="text-xs tracking-wider uppercase font-medium" style={{ color: 'var(--color-sage-soft)', fontFamily: 'var(--font-mono)', fontSize: '10px' }}>
-              O contrato
-            </span>
+            <span className="text-xs tracking-wider uppercase font-medium" style={{ color: 'var(--color-sage-soft)', fontFamily: 'var(--font-mono)', fontSize: '10px' }}>O contrato</span>
           </div>
-          <p
-            className="font-display text-lg leading-snug"
-            style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
-          >
+          <p className="font-display text-lg leading-snug" style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}>
             Ao adotar um pedido, o padrinho compromete-se a <span className="italic" style={{ color: 'var(--color-sage-soft)' }}>custear as lentes</span> conforme a receita médica apresentada.
           </p>
           <p className="text-xs mt-3 italic opacity-70" style={{ fontFamily: 'var(--font-display)' }}>
             A entrega é confirmada por leitura de QR Code — sem burocracia.
           </p>
         </div>
-
-        <span
-          className="absolute -right-2 -bottom-2 eye-mark opacity-10"
-          style={{ color: 'var(--color-sage-soft)', fontSize: '90px' }}
-          aria-hidden
-        >
-          ♡
-        </span>
       </section>
 
       {/* List header */}

@@ -75,39 +75,40 @@ export function TabHome({ user, ads, onSelectAd, onOpenNotifications, onOpenMap 
         </button>
       </div>
 
-      {/* Editorial tip card */}
+      {/* Editorial tip card with image */}
       <section className="px-5 mb-8">
         <div
-          className="relative overflow-hidden p-5 rounded-2xl grain-overlay"
-          style={{
-            background: 'linear-gradient(135deg, var(--color-ink) 0%, #2a221b 100%)',
-            color: 'var(--color-paper)',
-          }}
+          className="relative overflow-hidden rounded-2xl"
+          style={{ background: 'var(--color-ink)' }}
         >
-          <div className="flex items-start justify-between gap-4 relative z-10">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-rust-soft)' }} />
-                <span className="kicker" style={{ color: 'var(--color-paper-3)', opacity: 0.7, fontSize: '10px' }}>Coluna · Cuidado com a vista</span>
-              </div>
-              <p
-                className="font-display text-xl leading-snug"
-                style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
-              >
-                "Antes de trocar as <span className="italic" style={{ color: 'var(--color-rust-soft)' }}>lentes</span>, troque o <span className="italic">exame</span>."
-              </p>
-              <button
-                className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase py-2 px-4 rounded-full"
-                style={{
-                  background: 'rgba(245,239,228,0.12)',
-                  color: 'var(--color-rust-soft)',
-                  fontFamily: 'var(--font-mono)',
-                }}
-              >
-                Ler mais →
-              </button>
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img src="/images/child-vision.png" alt="" className="w-full h-full object-cover opacity-40" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(24,20,15,0.3) 0%, rgba(24,20,15,0.85) 100%)' }} />
+          </div>
+
+          <div className="relative z-10 p-5 pt-28" style={{ color: 'var(--color-paper)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-rust-soft)' }} />
+              <span className="kicker" style={{ color: 'var(--color-paper-3)', opacity: 0.7, fontSize: '10px' }}>Coluna · Cuidado com a vista</span>
             </div>
-            <span className="eye-mark text-5xl opacity-15" aria-hidden>20/20</span>
+            <p
+              className="font-display text-xl leading-snug"
+              style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
+            >
+              "Antes de trocar as <span className="italic" style={{ color: 'var(--color-rust-soft)' }}>lentes</span>, troque o <span className="italic">exame</span>."
+            </p>
+            <button
+              className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase py-2.5 px-4 rounded-full"
+              style={{
+                background: 'rgba(245,239,228,0.15)',
+                color: 'var(--color-rust-soft)',
+                fontFamily: 'var(--font-mono)',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              Ler mais →
+            </button>
           </div>
         </div>
       </section>

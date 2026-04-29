@@ -47,13 +47,18 @@ export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAd
   };
 
   return (
-    <div className="px-5 safe-top pt-4 pb-32">
-      <header className="mb-5">
-        <span className="kicker kicker-rust">Novo anúncio</span>
-        <h1 className="serif-display text-4xl mt-1" style={{ color: 'var(--color-ink)' }}>Componha sua <span className="italic" style={{ color: 'var(--color-rust)' }}>peça</span>.</h1>
-      </header>
+    <div className="safe-top pb-32">
+      {/* Hero banner */}
+      <div className="relative overflow-hidden mx-5 mt-4 rounded-2xl" style={{ background: 'var(--color-ink)' }}>
+        <img src="/images/catalogue-banner.png" alt="" className="w-full h-32 object-cover opacity-50" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(24,20,15,0.9) 0%, transparent 100%)' }} />
+        <div className="absolute bottom-0 left-0 p-5">
+          <span className="kicker" style={{ color: 'var(--color-rust-soft)', fontSize: '10px' }}>Novo anúncio</span>
+          <h1 className="serif-display text-3xl mt-1" style={{ color: 'var(--color-paper)' }}>Componha sua <span className="italic" style={{ color: 'var(--color-rust-soft)' }}>peça</span>.</h1>
+        </div>
+      </div>
 
-      <section className="mb-7">
+      <section className="mb-7 px-5 mt-6">
         <span className="kicker block mb-3" style={{ fontSize: '11px' }}>01 · imagens</span>
         <input type="file" accept="image/*" multiple className="hidden" ref={fileInputRef} onChange={handleFileChange} />
         {newAd.photoUrls.length === 0 ? (
@@ -77,7 +82,7 @@ export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAd
         )}
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-6 px-5">
         <div><label className="kicker block mb-2" style={{ fontSize: '11px' }}>02 · título</label><input value={newAd.title} onChange={(e) => setNewAd({ ...newAd, title: e.target.value })} placeholder="ex.: Óculos unissex retrô em acetato" className="field-paper w-full" /></div>
         <div><label className="kicker block mb-2" style={{ fontSize: '11px' }}>03 · modalidade</label><SegmentedControl value={newAd.type} onChange={(v) => setNewAd({ ...newAd, type: v })} options={[{ value: 'donation', label: 'Doação' }, { value: 'exchange', label: 'Troca' }]} /></div>
         <div><label className="kicker block mb-2" style={{ fontSize: '11px' }}>04 · público</label><SegmentedControl value={newAd.targetAudience} onChange={(v) => setNewAd({ ...newAd, targetAudience: v })} options={[{ value: 'adult', label: 'Adulto' }, { value: 'child', label: 'Infantil' }, { value: 'unisex', label: 'Unissex' }]} /></div>
