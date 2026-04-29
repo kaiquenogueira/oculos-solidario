@@ -63,17 +63,24 @@ export default function App() {
   }, []);
 
   const handleAuthUser = async (supabaseUser: any) => {
+    // Fetch real profile from DB (trigger created it)
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', supabaseUser.id)
+      .single();
+
     const newUser: User = {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
-      name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-      city: 'São Paulo', // Mock until we have profile setup
-      state: 'SP',
-      neighborhood: 'Centro',
-      description: 'Membro da rede Óculos Solidários',
-      photoUrl: supabaseUser.user_metadata?.avatar_url || '',
-      rating: 5,
-      totalRatings: 1
+      name: userProfile?.name || supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
+      city: userProfile?.city || 'São Paulo', // Fallback if null
+      state: userProfile?.state || 'SP',
+      neighborhood: userProfile?.neighborhood || 'Centro',
+      description: userProfile?.description || 'Membro da rede Óculos Solidários',
+      photoUrl: userProfile?.photo_url || supabaseUser.user_metadata?.avatar_url || '',
+      rating: userProfile?.rating || 5,
+      totalRatings: userProfile?.total_ratings || 1
     };
     login(newUser);
     
