@@ -5,10 +5,12 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useStore, Ad, PrescriptionRequest } from '../store/useStore';
+import { useStore, Ad, PrescriptionRequest, User } from '../store/useStore';
 import { moderateAd } from '../services/moderateService';
+import { supabase } from '../services/supabase';
+import { MOCK_ADS, MOCK_PRESCRIPTION_REQUESTS } from '../data/mockData';
 
 // Components
 import { Navigation } from '../components/Navigation';
@@ -40,6 +42,48 @@ export default function App() {
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<PrescriptionRequest | null>(null);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  useEffect(() => {
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        handleAuthUser(session.user);
+      }
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        handleAuthUser(session.user);
+      } else {
+        useStore.getState().logout();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleAuthUser = (supabaseUser: any) => {
+    const newUser: User = {
+      id: supabaseUser.id,
+      email: supabaseUser.email || '',
+      name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
+      city: 'São Paulo', // Mock until we have profile setup
+      state: 'SP',
+      neighborhood: 'Centro',
+      description: 'Membro da rede Óculos Solidários',
+      photoUrl: supabaseUser.user_metadata?.avatar_url || '',
+      rating: 5,
+      totalRatings: 1
+    };
+    login(newUser);
+    
+    // Inject Mock Data if empty to keep UI functional during Sprint 2
+    if (useStore.getState().ads.length === 0) {
+      setAds(MOCK_ADS);
+      MOCK_PRESCRIPTION_REQUESTS.forEach(req => useStore.getState().addPrescriptionRequest(req));
+    }
+  };
 
   // Modals visibility
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -75,13 +119,7 @@ export default function App() {
   });
 
   if (!isAuthenticated) {
-    return (
-      <LoginView 
-        onLogin={login} 
-        setAds={setAds} 
-        addPrescriptionRequest={addPrescriptionRequest} 
-      />
-    );
+    return <LoginView />;
   }
 
   const handleCreateAd = async () => {
