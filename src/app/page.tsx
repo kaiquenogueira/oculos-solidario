@@ -424,8 +424,8 @@ export default function App() {
   };
 
   return (
-    <div className="flex justify-center bg-slate-200 min-h-screen">
-      <div className="w-full max-w-md bg-slate-50 relative min-h-screen shadow-2xl flex flex-col font-sans overflow-hidden">
+    <div className="flex justify-center min-h-screen" style={{ background: 'var(--color-paper-3)' }}>
+      <div className="w-full max-w-md relative min-h-screen flex flex-col overflow-hidden paper-grain" style={{ background: 'var(--color-paper)', boxShadow: '0 0 80px -20px rgba(26,22,18,0.25), 0 0 0 1px rgba(26,22,18,0.06)' }}>
         
         <main className="flex-1 overflow-y-auto scrollbar-hide pb-20">
           <AnimatePresence mode="wait">

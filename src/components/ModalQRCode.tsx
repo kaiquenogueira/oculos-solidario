@@ -13,30 +13,38 @@ export function ModalQRCode({ show, onClose, value, title, description }: ModalQ
   if (!show) return null;
 
   return (
-    <div className="absolute inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-md">
-      <div className="w-full max-w-sm bg-white rounded-3xl p-8 text-center space-y-6">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-bold text-slate-800">{title}</h3>
-          <button onClick={onClose} className="text-slate-400">
-            <X size={24} />
+    <div
+      className="absolute inset-0 z-[70] flex items-center justify-center p-6"
+      style={{ background: 'rgba(26,22,18,0.85)', backdropFilter: 'blur(8px)' }}
+    >
+      <div
+        className="w-full max-w-sm relative paper-grain hairline-strong p-7"
+        style={{ background: 'var(--color-paper)' }}
+      >
+        <div className="flex items-baseline justify-between mb-4 relative z-10">
+          <span className="kicker kicker-rust">— ticket de retirada —</span>
+          <button onClick={onClose} aria-label="Fechar">
+            <X size={16} strokeWidth={1.5} style={{ color: 'var(--color-ink)' }} />
           </button>
         </div>
-        
-        <div className="bg-white p-4 rounded-3xl shadow-inner inline-block mx-auto border-8 border-slate-50">
-          <QRCodeCanvas value={value} size={200} />
+
+        <h3 className="serif-display text-[28px] mb-2 relative z-10" style={{ color: 'var(--color-ink)' }}>
+          {title}
+        </h3>
+        <div className="rule-double mb-5 relative z-10"></div>
+
+        <div className="flex justify-center mb-5 relative z-10">
+          <div className="p-4 hairline-strong" style={{ background: 'var(--color-paper)' }}>
+            <QRCodeCanvas value={value} size={196} fgColor="#1A1612" bgColor="#F5EFE4" />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-bold text-slate-800">Mostre este código para o doador</p>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            {description}
-          </p>
-        </div>
+        <p className="font-display italic text-center text-[15px] leading-snug mb-2 relative z-10" style={{ color: 'var(--color-ink-2)' }}>
+          {description}
+        </p>
+        <p className="kicker text-center mb-6 relative z-10">— válido por 24 horas —</p>
 
-        <button 
-          onClick={onClose}
-          className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold"
-        >
+        <button onClick={onClose} className="btn-ghost w-full relative z-10">
           Fechar
         </button>
       </div>

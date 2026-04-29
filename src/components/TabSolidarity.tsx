@@ -1,4 +1,4 @@
-import { Heart, HandHeart, PlusCircle, User, MapPin, FileBadge, ChevronRight } from 'lucide-react';
+import { Plus, MapPin, ArrowUpRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { PrescriptionRequest } from '../store/useStore';
 
@@ -10,81 +10,125 @@ interface TabSolidarityProps {
 
 export function TabSolidarity({ prescriptionRequests, onSelectRequest, onOpenNewRequestForm }: TabSolidarityProps) {
   return (
-    <div className="px-4 pt-12 space-y-6 pb-24">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-slate-800">Solidariedade</h1>
-        <Heart className="text-red-500 fill-red-500" size={24} />
-      </div>
-      
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl relative overflow-hidden">
-         <div className="relative z-10">
-           <h2 className="text-lg font-bold mb-2">Seja um Padrinho Visual</h2>
-           <p className="text-blue-100 text-sm leading-tight mb-4">Muitas famílias têm a armação, mas não conseguem comprar as lentes. Ajude alguém a enxergar um futuro melhor.</p>
-           <div className="flex gap-2">
-             <button 
-               onClick={() => {
-                 alert("Ao adotar um pedido, você se compromete a comprar as lentes de acordo com a receita médica apresentada. A entrega é confirmada via QR Code.");
-               }}
-               className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl text-xs font-bold transition-all"
-             >
-               Como funciona?
-             </button>
-           </div>
-         </div>
-         <HandHeart className="absolute -right-8 -bottom-8 text-white opacity-10" size={160} />
-      </div>
+    <div className="px-6 pt-10 pb-28">
+      {/* Header */}
+      <header className="mb-5">
+        <span className="kicker kicker-sage">Caderno solidário</span>
+        <h1 className="serif-display text-[44px] mt-1" style={{ color: 'var(--color-ink)' }}>
+          <span className="italic" style={{ color: 'var(--color-sage)' }}>Apadrinhe</span><br/>uma visão.
+        </h1>
+        <p className="font-display italic text-base mt-3 max-w-[90%]" style={{ color: 'var(--color-ink-3)' }}>
+          Há quem tenha a armação mas não as lentes. Há quem possa custear as lentes mas nunca pediu o endereço.
+        </p>
+      </header>
 
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-slate-700">Pedidos de Ajuda</h3>
-        <button 
-          onClick={onOpenNewRequestForm}
-          className="text-blue-600 text-xs font-bold flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
+      <div className="rule-double mb-6"></div>
+
+      {/* Manifesto card */}
+      <section
+        className="relative overflow-hidden p-7 mb-8 grain-overlay"
+        style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+      >
+        <div className="flex items-baseline gap-3 mb-3 relative z-10">
+          <span className="numeral text-[10px]" style={{ color: 'var(--color-sage-soft)' }}>§ 01</span>
+          <span className="font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: 'var(--color-sage-soft)' }}>
+            O contrato
+          </span>
+        </div>
+        <p
+          className="font-display text-[24px] leading-tight relative z-10"
+          style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
         >
-          <PlusCircle size={14} className="mr-1" />
-          Pedir Ajuda
+          Ao adotar um pedido, o padrinho compromete-se a <span className="italic" style={{ color: 'var(--color-sage-soft)' }}>custear as lentes</span> conforme a receita médica apresentada.
+        </p>
+        <p className="font-display italic text-sm mt-4 relative z-10" style={{ color: 'var(--color-paper-3)', opacity: 0.75 }}>
+          A entrega é confirmada por leitura de QR Code — sem burocracia, sem rastros desnecessários.
+        </p>
+
+        <span
+          className="absolute -right-2 -bottom-2 eye-mark text-[120px] opacity-15"
+          style={{ color: 'var(--color-sage-soft)' }}
+          aria-hidden
+        >
+          ♡
+        </span>
+      </section>
+
+      {/* List header */}
+      <div className="flex items-end justify-between mb-4">
+        <div>
+          <span className="numeral text-[11px]" style={{ color: 'var(--color-sage)' }}>§ 02</span>
+          <h3 className="serif-display text-[26px] mt-1" style={{ color: 'var(--color-ink)' }}>
+            Pedidos <span className="italic">em aberto</span>
+          </h3>
+        </div>
+        <button
+          onClick={onOpenNewRequestForm}
+          className="font-mono text-[10px] tracking-[0.2em] uppercase inline-flex items-center gap-1.5 pb-0.5"
+          style={{ color: 'var(--color-sage)', borderBottom: '1px solid var(--color-sage)' }}
+        >
+          <Plus size={12} strokeWidth={1.8} /> Pedir ajuda
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {prescriptionRequests.length === 0 ? (
-          <div className="text-center py-10 opacity-40">
-            <Heart size={48} className="mx-auto mb-4" />
-            <p>Nenhum pedido no momento.</p>
+          <div className="hairline p-10 text-center" style={{ background: 'var(--color-paper-2)' }}>
+            <span className="eye-mark text-[42px]" style={{ color: 'var(--color-ink-4)' }}>—∅—</span>
+            <p className="font-display italic mt-3" style={{ color: 'var(--color-ink-3)' }}>
+              Nenhum pedido neste momento.
+            </p>
           </div>
         ) : (
-          prescriptionRequests.map((req) => (
-            <motion.div 
+          prescriptionRequests.map((req, i) => (
+            <motion.button
               key={req.id}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.99 }}
               onClick={() => onSelectRequest(req)}
-              className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-3 relative overflow-hidden"
+              className="w-full text-left relative paper-edge p-5 grain-overlay"
+              style={{ background: 'var(--color-paper)' }}
             >
-              {req.status === 'adopted' && (
-                <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-[10px] font-bold rounded-bl-xl">
-                  ADOTADO
-                </div>
-              )}
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
-                  <User className="text-blue-600" size={24} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-slate-800">{req.patientName}</h4>
-                  <p className="text-[10px] text-slate-400 font-medium flex items-center">
-                    <MapPin size={10} className="mr-1" />
-                    {req.neighborhood}, {req.city}
-                  </p>
-                </div>
+              {/* Index marker */}
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
+                  N.º {String(i + 1).padStart(3, '0')}
+                </span>
+                {req.status === 'adopted' ? (
+                  <span className="tag-sage">✓ Apadrinhado</span>
+                ) : (
+                  <span className="tag-mono" style={{ color: 'var(--color-rust)', borderColor: 'var(--color-rust)' }}>
+                    ◌ aberto
+                  </span>
+                )}
               </div>
-              <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed italic">"{req.description}"</p>
-              <div className="pt-2 flex items-center justify-between border-t border-slate-50">
-                <div className="flex items-center text-blue-600">
-                  <FileBadge size={14} className="mr-1" />
-                  <span className="text-xs font-bold">{req.prescriptionSummary}</span>
-                </div>
-                <ChevronRight size={18} className="text-slate-300" />
+
+              <h4 className="serif-display text-[24px] leading-tight" style={{ color: 'var(--color-ink)' }}>
+                {req.patientName}
+              </h4>
+
+              <div className="flex items-center gap-3 mt-1">
+                <span className="kicker flex items-center gap-1">
+                  <MapPin size={9} strokeWidth={1.5} />
+                  {req.neighborhood}, {req.city}
+                </span>
               </div>
-            </motion.div>
+
+              <div className="rule my-3"></div>
+
+              <p className="font-display italic text-[15px] leading-relaxed line-clamp-3" style={{ color: 'var(--color-ink-2)' }}>
+                "{req.description}"
+              </p>
+
+              <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px dashed rgba(26,22,18,0.18)' }}>
+                <div>
+                  <span className="kicker block">Receita resumida</span>
+                  <span className="font-mono text-[13px] mt-0.5 block" style={{ color: 'var(--color-sage)' }}>
+                    {req.prescriptionSummary || '—'}
+                  </span>
+                </div>
+                <ArrowUpRight size={18} strokeWidth={1.5} style={{ color: 'var(--color-ink-3)' }} />
+              </div>
+            </motion.button>
           ))
         )}
       </div>

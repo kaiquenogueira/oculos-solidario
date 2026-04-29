@@ -1,4 +1,4 @@
-import { ChevronRight, User, Info, HandHeart, QrCode } from 'lucide-react';
+import { ArrowLeft, MapPin, QrCode, HandHeart, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { PrescriptionRequest, User as UserType } from '../store/useStore';
 import { createClient } from '../lib/supabase/client';
@@ -12,12 +12,8 @@ interface ModalPrescriptionDetailProps {
   onShowQR: () => void;
 }
 
-export function ModalPrescriptionDetail({ 
-  request, 
-  onClose, 
-  user, 
-  onAdopt, 
-  onShowQR 
+export function ModalPrescriptionDetail({
+  request, onClose, user, onAdopt, onShowQR
 }: ModalPrescriptionDetailProps) {
   const supabase = createClient();
   const [prescriptionUrl, setPrescriptionUrl] = useState<string>('');
@@ -27,11 +23,13 @@ export function ModalPrescriptionDetail({
     if (!request) return;
     const fetchUrls = async () => {
       if (request.prescriptionPhotoUrl) {
-        const { data } = await supabase.storage.from('private-prescriptions').createSignedUrl(request.prescriptionPhotoUrl, 60 * 60);
+        const { data } = await supabase.storage.from('private-prescriptions')
+          .createSignedUrl(request.prescriptionPhotoUrl, 60 * 60);
         if (data) setPrescriptionUrl(data.signedUrl);
       }
       if (request.documentPhotoUrl) {
-        const { data } = await supabase.storage.from('private-prescriptions').createSignedUrl(request.documentPhotoUrl, 60 * 60);
+        const { data } = await supabase.storage.from('private-prescriptions')
+          .createSignedUrl(request.documentPhotoUrl, 60 * 60);
         if (data) setDocumentUrl(data.signedUrl);
       }
     };
@@ -39,93 +37,124 @@ export function ModalPrescriptionDetail({
   }, [request]);
 
   if (!request) return null;
+  const initials = (request.patientName || '?').split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase();
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
-      className="absolute inset-0 z-50 bg-white flex flex-col pt-12"
+      className="absolute inset-0 z-50 flex flex-col paper-grain"
+      style={{ background: 'var(--color-paper)' }}
     >
-      <div className="p-4 flex items-center justify-between border-b border-slate-50">
-        <button onClick={onClose} className="p-2 -ml-2 text-blue-600">
-           <ChevronRight size={24} className="rotate-180" />
+      <header
+        className="px-5 pt-10 pb-4 flex items-center gap-3 relative z-10"
+        style={{ background: 'var(--color-paper)', borderBottom: '1px solid rgba(26,22,18,0.18)' }}
+      >
+        <button onClick={onClose} className="p-1 -ml-1" aria-label="Voltar">
+          <ArrowLeft size={18} strokeWidth={1.5} style={{ color: 'var(--color-ink)' }} />
         </button>
-        <h3 className="font-bold text-slate-800">Detalhes do Pedido</h3>
-        <div className="w-10"></div>
-      </div>
+        <div className="flex-1">
+          <span className="kicker kicker-sage">Caderno solidário</span>
+          <h3 className="font-display text-[20px] leading-tight mt-0.5" style={{ color: 'var(--color-ink)' }}>
+            Pedido N.º {request.id.slice(0, 6).toUpperCase()}
+          </h3>
+        </div>
+      </header>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <User size={32} className="text-blue-600" />
+      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-4 relative z-10">
+        {/* Patient identity */}
+        <div className="flex items-start gap-4 mb-5">
+          <div
+            className="optical-ring shrink-0 w-16 h-16 flex items-center justify-center"
+            style={{ background: 'var(--color-sage)', color: 'var(--color-paper)' }}
+          >
+            <span className="font-display text-xl">{initials}</span>
+          </div>
+          <div className="flex-1 pt-1">
+            <h2 className="serif-display text-[28px] leading-tight" style={{ color: 'var(--color-ink)' }}>
+              {request.patientName}
+            </h2>
+            <span className="kicker flex items-center gap-1 mt-1">
+              <MapPin size={10} strokeWidth={1.5} />
+              {request.neighborhood}, {request.city}
+            </span>
+          </div>
+        </div>
+
+        <div className="rule-double mb-5"></div>
+
+        {/* Prescription */}
+        <div className="mb-6 p-5 hairline" style={{ background: 'var(--color-paper-2)' }}>
+          <span className="kicker kicker-rust block mb-1">— Receita resumida —</span>
+          <p className="font-mono text-[18px] mt-1" style={{ color: 'var(--color-rust)' }}>
+            {request.prescriptionSummary || '—'}
+          </p>
+        </div>
+
+        {/* Story */}
+        <span className="kicker block mb-2">A história</span>
+        <p className="font-display italic text-[17px] leading-relaxed mb-6" style={{ color: 'var(--color-ink-2)' }}>
+          "{request.description}"
+        </p>
+
+        <div className="rule mb-5"></div>
+
+        {/* Documents */}
+        <span className="kicker block mb-3">— documentação verificada —</span>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div>
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase block mb-1.5" style={{ color: 'var(--color-ink-3)' }}>
+              fig. 01 · receita
+            </span>
+            <div className="aspect-square hairline overflow-hidden" style={{ background: 'var(--color-paper-2)' }}>
+              {prescriptionUrl && <img src={prescriptionUrl} className="w-full h-full object-cover" alt="Receita" />}
+            </div>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">{request.patientName}</h2>
-            <p className="text-xs text-slate-400 capitalize">{request.neighborhood}, {request.city}</p>
-          </div>
-        </div>
-
-        <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
-          <h4 className="text-xs font-bold text-red-600 uppercase mb-1">Resumo da Receita</h4>
-          <p className="text-lg font-bold text-red-800">{request.prescriptionSummary}</p>
-        </div>
-
-        <div>
-           <h3 className="font-bold text-slate-800 mb-2">História</h3>
-           <p className="text-slate-600 text-sm leading-relaxed italic">"{request.description}"</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold text-slate-400 uppercase">Receita Médica</h4>
-            <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-               {prescriptionUrl && <img src={prescriptionUrl} className="w-full h-full object-cover" alt="Receita" />}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold text-slate-400 uppercase">Documento Ident.</h4>
-            <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-               {documentUrl && <img src={documentUrl} className="w-full h-full object-cover" alt="Documento" />}
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase block mb-1.5" style={{ color: 'var(--color-ink-3)' }}>
+              fig. 02 · documento
+            </span>
+            <div className="aspect-square hairline overflow-hidden" style={{ background: 'var(--color-paper-2)' }}>
+              {documentUrl && <img src={documentUrl} className="w-full h-full object-cover" alt="Documento" />}
             </div>
           </div>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
-           <Info size={18} className="text-blue-600 shrink-0 mt-0.5" />
-           <p className="text-xs text-blue-700 leading-tight">
-             <b>Transparência:</b> A receita e o documento foram verificados para garantir que a doação chegue a quem realmente precisa.
-           </p>
+        {/* Trust */}
+        <div className="p-4 flex items-start gap-3 grain-overlay relative" style={{ background: 'var(--color-sage)', color: 'var(--color-paper)' }}>
+          <ShieldCheck size={16} strokeWidth={1.6} className="shrink-0 mt-0.5 relative z-10" />
+          <p className="font-display italic text-[13px] leading-snug relative z-10">
+            Receita e documento foram verificados pela curadoria. Sua doação alcança quem realmente precisa.
+          </p>
         </div>
       </div>
 
-      <div className="p-6 border-t border-slate-100 space-y-3">
+      <div
+        className="px-6 py-5 space-y-3"
+        style={{ background: 'var(--color-paper)', borderTop: '1px solid rgba(26,22,18,0.18)' }}
+      >
         {request.status === 'adopted' ? (
-           <div className="text-center py-4 px-6 bg-green-50 rounded-2xl border border-green-100">
-              <p className="text-green-700 font-bold">Este pedido já foi adotado por um padrinho!</p>
-              <button 
-                onClick={onShowQR}
-                className="mt-4 w-full py-4 bg-green-600 text-white rounded-2xl font-bold flex items-center justify-center"
-              >
-                 <QrCode size={20} className="mr-2" />
-                 Mostrar QR Code de Recebimento
-              </button>
-           </div>
+          <>
+            <div className="px-4 py-3 text-center" style={{ background: 'var(--color-sage)', color: 'var(--color-paper)' }}>
+              <span className="font-mono text-[10px] tracking-[0.22em] uppercase block">Pedido apadrinhado</span>
+              <p className="font-display italic mt-1">Aguardando entrega das lentes.</p>
+            </div>
+            <button onClick={onShowQR} className="btn-sage w-full">
+              <QrCode size={14} strokeWidth={1.8} />
+              QR de recebimento
+            </button>
+          </>
         ) : (
-          <button 
-            onClick={() => {
-              if (user) onAdopt(request.id, user.id);
-            }}
-            className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center shadow-lg active:scale-95 transition-all"
+          <button
+            onClick={() => { if (user) onAdopt(request.id, user.id); }}
+            className="btn-sage w-full"
           >
-            <HandHeart size={20} className="mr-2" />
-            Adotar Pedido (Comprar Lentes)
+            <HandHeart size={14} strokeWidth={1.8} />
+            Apadrinhar — comprar as lentes
           </button>
         )}
-        <button 
-          onClick={onClose}
-          className="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold"
-        >
+        <button onClick={onClose} className="btn-ghost w-full">
           Voltar
         </button>
       </div>

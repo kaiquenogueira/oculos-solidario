@@ -1,4 +1,4 @@
-import { User as UserIcon, Star, Info, ScanLine, Eye, QrCode, MessageCircle, Settings, LogOut, ChevronRight } from 'lucide-react';
+import { Star, ScanLine, Eye, Shield, MessageCircle, Settings, LogOut, ArrowUpRight } from 'lucide-react';
 import { User, Ad } from '../store/useStore';
 
 interface TabProfileProps {
@@ -12,77 +12,137 @@ interface TabProfileProps {
   onLogout: () => void;
 }
 
-export function TabProfile({ 
-  user, 
-  ads, 
-  onOpenScanner, 
-  onOpenMyAds, 
-  onOpenModeration, 
-  onGoToChat, 
-  onOpenSettings, 
-  onLogout 
+export function TabProfile({
+  user, ads, onOpenScanner, onOpenMyAds, onOpenModeration, onGoToChat, onOpenSettings, onLogout
 }: TabProfileProps) {
+  const myAdsCount = ads.filter(ad => ad.userId === user?.id).length;
+  const initials = (user?.name || 'U')
+    .split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase();
+
   const menuItems = [
-    { icon: ScanLine, label: 'Escanear Entrega', value: '', action: onOpenScanner },
-    { icon: Eye, label: 'Meus Anúncios', value: ads.filter(ad => ad.userId === user?.id).length.toString(), action: onOpenMyAds },
-    { icon: QrCode, label: 'Área de Moderação', value: 'Admin', action: onOpenModeration, color: 'text-purple-600' },
-    { icon: MessageCircle, label: 'Mensagens', value: '4', action: onGoToChat },
-    { icon: Settings, label: 'Preferências', value: '', action: onOpenSettings },
-    { icon: LogOut, label: 'Sair', value: '', color: 'text-red-500', action: onLogout }
+    { icon: ScanLine,       label: 'Escanear entrega',  meta: 'qr',     action: onOpenScanner,    accent: 'rust' as const },
+    { icon: Eye,            label: 'Meus anúncios',     meta: String(myAdsCount).padStart(2, '0'), action: onOpenMyAds },
+    { icon: Shield,         label: 'Moderação',         meta: 'admin',  action: onOpenModeration, accent: 'cobalt' as const },
+    { icon: MessageCircle,  label: 'Conversas',         meta: '04',     action: onGoToChat },
+    { icon: Settings,       label: 'Preferências',      meta: '',       action: onOpenSettings },
+    { icon: LogOut,         label: 'Encerrar sessão',   meta: '',       action: onLogout, accent: 'danger' as const },
   ];
 
+  const accentColor = (a?: 'rust' | 'cobalt' | 'danger') => {
+    if (a === 'rust') return 'var(--color-rust)';
+    if (a === 'cobalt') return 'var(--color-cobalt)';
+    if (a === 'danger') return 'var(--color-rust-deep)';
+    return 'var(--color-ink)';
+  };
+
   return (
-    <div className="px-4 pt-12 space-y-8 pb-24">
-      <div className="flex flex-col items-center text-center">
-        <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4 relative shadow-inner">
-          <UserIcon size={48} className="text-blue-600" />
-          <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-             <div className="w-2 h-2 bg-white rounded-full" />
-          </div>
-        </div>
-        <h1 className="text-2xl font-bold text-slate-800">{user?.name}</h1>
-        <p className="text-slate-500 text-sm mb-2">{user?.city}, {user?.state}</p>
-        <div className="flex items-center bg-blue-50 px-3 py-1 rounded-full">
-          <Star size={14} className="text-yellow-500 fill-yellow-500 mr-1" />
-          <span className="text-sm font-bold text-blue-700">{user?.rating}</span>
-          <span className="text-xs text-blue-400 ml-1">({user?.totalRatings})</span>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full opacity-50" />
-          <h3 className="font-bold text-slate-800 mb-2 relative z-10">Sobre</h3>
-          <p className="text-slate-500 text-sm leading-relaxed relative z-10">{user?.description}</p>
+    <div className="px-6 pt-10 pb-28">
+      {/* Identity card — eye chart aesthetic */}
+      <header className="mb-2">
+        <div className="flex items-baseline justify-between mb-3">
+          <span className="kicker">Identidade · perfil</span>
+          <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
+            #{user?.id?.slice(0, 6).toUpperCase() || '——'}
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-1 bg-white rounded-3xl p-2 shadow-sm border border-slate-100">
-          <div className="p-4 bg-blue-50/50 rounded-2xl mb-2 flex items-start">
-             <Info size={16} className="text-blue-600 mt-0.5 shrink-0" />
-             <p className="ml-3 text-[11px] text-blue-700 leading-tight">
-               <b>Dica:</b> Ao entregar ou receber óculos, use o QR Code. Isso remove o anúncio automaticamente para que você não precise se preocupar depois.
-             </p>
-          </div>
-          {menuItems.map((item, idx) => (
-            <button 
-              key={idx} 
-              onClick={item.action}
-              className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors rounded-2xl group"
+        <div className="grain-overlay relative p-6 hairline" style={{ background: 'var(--color-paper-2)' }}>
+          <div className="flex items-start gap-5 relative z-10">
+            <div
+              className="optical-ring shrink-0 w-20 h-20 flex items-center justify-center"
+              style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
             >
-              <div className="flex items-center">
-                <div className={`p-2 rounded-xl bg-slate-50 group-hover:bg-blue-50 transition-colors ${item.color || 'text-slate-600'}`}>
-                  <item.icon size={20} />
-                </div>
-                <span className={`ml-3 font-semibold ${item.color || 'text-slate-700'}`}>{item.label}</span>
+              {user?.photoUrl ? (
+                <img src={user.photoUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-display text-3xl">{initials}</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0 pt-1">
+              <h1 className="serif-display text-[28px] leading-tight" style={{ color: 'var(--color-ink)' }}>
+                {user?.name}
+              </h1>
+              <p className="font-mono text-[10px] tracking-[0.18em] uppercase mt-1" style={{ color: 'var(--color-ink-3)' }}>
+                {user?.neighborhood} · {user?.city}/{user?.state}
+              </p>
+              <div className="flex items-center gap-3 mt-3">
+                <span className="inline-flex items-center gap-1">
+                  <Star size={12} className="fill-current" style={{ color: 'var(--color-amber)' }} />
+                  <span className="numeral text-[13px]" style={{ color: 'var(--color-ink)' }}>{user?.rating?.toFixed(1)}</span>
+                  <span className="font-mono text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
+                    /5 · {user?.totalRatings} aval.
+                  </span>
+                </span>
               </div>
-              <div className="flex items-center text-slate-400">
-                <span className="text-xs font-bold mr-2">{item.value}</span>
-                <ChevronRight size={18} />
-              </div>
-            </button>
-          ))}
+            </div>
+          </div>
+
+          {user?.description && (
+            <>
+              <div className="rule my-4 relative z-10"></div>
+              <p className="font-display italic text-[14px] leading-relaxed relative z-10" style={{ color: 'var(--color-ink-2)' }}>
+                "{user.description}"
+              </p>
+            </>
+          )}
         </div>
+      </header>
+
+      <div className="rule-double my-7"></div>
+
+      {/* Tip strip */}
+      <div className="mb-6 px-4 py-3 flex items-start gap-3 relative" style={{ background: 'var(--color-amber)', color: 'var(--color-ink)' }}>
+        <span className="font-mono text-[10px] tracking-[0.2em] uppercase shrink-0" style={{ color: 'var(--color-rust-deep)' }}>nota</span>
+        <p className="font-display italic text-[13px] leading-snug">
+          Ao entregar ou receber, leia o QR Code. O anúncio é encerrado automaticamente.
+        </p>
       </div>
+
+      {/* Menu */}
+      <section>
+        <div className="flex items-baseline gap-3 mb-3">
+          <span className="numeral text-[11px]" style={{ color: 'var(--color-rust)' }}>§ 02</span>
+          <span className="kicker">Acessos rápidos</span>
+        </div>
+
+        <ul>
+          {menuItems.map((item, idx) => {
+            const color = accentColor(item.accent);
+            return (
+              <li key={idx}>
+                <button
+                  onClick={item.action}
+                  className="w-full grid grid-cols-[24px_1fr_auto_auto] items-center gap-4 py-4 group transition-colors hover:bg-[var(--color-paper-2)]"
+                  style={{ borderBottom: '1px solid rgba(26,22,18,0.12)' }}
+                >
+                  <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
+                    {String(idx + 1).padStart(2, '0')}.
+                  </span>
+                  <span className="flex items-center gap-3 text-left">
+                    <item.icon size={16} strokeWidth={1.5} style={{ color }} />
+                    <span className="font-display text-[17px]" style={{ color }}>
+                      {item.label}
+                    </span>
+                  </span>
+                  <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: 'var(--color-ink-4)' }}>
+                    {item.meta}
+                  </span>
+                  <ArrowUpRight size={14} strokeWidth={1.5} style={{ color: 'var(--color-ink-3)' }} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      {/* Colofon */}
+      <footer className="mt-10 pt-4">
+        <div className="rule mb-4"></div>
+        <div className="flex items-center justify-between">
+          <span className="kicker">Óculos Solidários — ed. 01</span>
+          <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>p. ∞</span>
+        </div>
+      </footer>
     </div>
   );
 }

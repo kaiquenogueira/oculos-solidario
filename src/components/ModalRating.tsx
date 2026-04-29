@@ -1,4 +1,4 @@
-import { Star, X } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface ModalRatingProps {
   show: boolean;
@@ -14,46 +14,47 @@ export function ModalRating({ show, onClose, rating, setRating, comment, setComm
   if (!show) return null;
 
   return (
-    <div className="absolute inset-0 z-[80] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-md">
-      <div className="w-full max-w-sm bg-white rounded-3xl p-8 text-center space-y-6">
-        <h3 className="text-xl font-bold text-slate-800">Avalie sua experiência</h3>
-        <p className="text-sm text-slate-500">Como foi a transação com este usuário?</p>
-        
-        <div className="flex justify-center gap-2">
+    <div
+      className="absolute inset-0 z-[80] flex items-center justify-center p-6"
+      style={{ background: 'rgba(26,22,18,0.85)', backdropFilter: 'blur(8px)' }}
+    >
+      <div
+        className="w-full max-w-sm relative paper-grain hairline-strong p-7"
+        style={{ background: 'var(--color-paper)' }}
+      >
+        <span className="kicker kicker-rust block mb-2 relative z-10">— diário de avaliação —</span>
+        <h3 className="serif-display text-[28px] mb-1 relative z-10" style={{ color: 'var(--color-ink)' }}>
+          Como foi a <span className="italic">troca</span>?
+        </h3>
+        <p className="font-display italic text-[14px] mb-5 relative z-10" style={{ color: 'var(--color-ink-3)' }}>
+          Sua nota ajuda a manter a curadoria honesta.
+        </p>
+        <div className="rule-double mb-5 relative z-10"></div>
+
+        <div className="flex justify-center gap-2 mb-5 relative z-10">
           {[1, 2, 3, 4, 5].map((star) => (
-            <button 
-              key={star} 
-              onClick={() => setRating(star)}
-              className="transition-transform active:scale-90"
-            >
-              <Star 
-                size={32} 
-                className={star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-slate-200'} 
+            <button key={star} onClick={() => setRating(star)} className="transition-transform active:scale-90">
+              <Star
+                size={28}
+                strokeWidth={1.4}
+                className={star <= rating ? 'fill-current' : ''}
+                style={{ color: star <= rating ? 'var(--color-amber)' : 'var(--color-ink-4)' }}
               />
             </button>
           ))}
         </div>
 
-        <textarea 
+        <span className="kicker block mb-2 relative z-10">— comentário —</span>
+        <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Deixe um comentário (opcional)"
-          className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none h-24"
+          placeholder="(opcional) deixe um recado…"
+          className="field-paper w-full h-20 resize-none mb-5 relative z-10"
         />
 
-        <div className="flex gap-3">
-          <button 
-            onClick={onClose}
-            className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold"
-          >
-            Pular
-          </button>
-          <button 
-            onClick={onSubmit}
-            className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg"
-          >
-            Enviar
-          </button>
+        <div className="flex gap-3 relative z-10">
+          <button onClick={onClose} className="btn-ghost flex-1">Pular</button>
+          <button onClick={onSubmit} className="btn-rust flex-1">Enviar</button>
         </div>
       </div>
     </div>

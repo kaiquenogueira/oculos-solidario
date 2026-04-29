@@ -1,5 +1,5 @@
-import { X, AlertCircle, User, Star, ChevronRight, QrCode, Info, CheckCircle2, MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { X, Star, ArrowUpRight, QrCode, CheckCircle2, MessageCircle, MapPin } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Ad } from '../store/useStore';
 
 interface ModalAdDetailProps {
@@ -12,134 +12,181 @@ interface ModalAdDetailProps {
   onManifestInterest: (ad: Ad) => void;
 }
 
-export function ModalAdDetail({ 
-  ad, 
-  onClose, 
-  activePhotoIndex, 
-  setActivePhotoIndex, 
-  onGenerateQRCode, 
-  onCompleteAd, 
-  onManifestInterest 
+export function ModalAdDetail({
+  ad, onClose, activePhotoIndex, setActivePhotoIndex,
+  onGenerateQRCode, onCompleteAd, onManifestInterest
 }: ModalAdDetailProps) {
   if (!ad) return null;
+  const photos = ad.photoUrls || [ad.photoUrl];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="absolute inset-0 z-50 bg-white flex flex-col"
+      transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+      className="absolute inset-0 z-50 flex flex-col paper-grain"
+      style={{ background: 'var(--color-paper)' }}
     >
-      <div className="relative h-72">
-        <div 
+      {/* Photo carousel */}
+      <div className="relative h-80 overflow-hidden" style={{ background: 'var(--color-ink)' }}>
+        <div
           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full"
           onScroll={(e) => {
-            const index = Math.round(e.currentTarget.scrollLeft / e.currentTarget.offsetWidth);
-            setActivePhotoIndex(index);
+            const idx = Math.round(e.currentTarget.scrollLeft / e.currentTarget.offsetWidth);
+            setActivePhotoIndex(idx);
           }}
         >
-          {(ad.photoUrls || [ad.photoUrl]).map((url, i) => (
+          {photos.map((url, i) => (
             <div key={i} className="min-w-full h-full snap-center relative">
               <img src={url} className="w-full h-full object-cover" alt="" />
+              <span className="absolute bottom-4 left-4 numeral text-[10px] px-2 py-1" style={{ background: 'var(--color-paper)', color: 'var(--color-ink)' }}>
+                fig. {String(i + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
+              </span>
             </div>
           ))}
         </div>
-        
-        {/* Indicators */}
-        {(ad.photoUrls?.length || 0) > 1 && (
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 px-4">
-            {ad.photoUrls.map((_, i) => (
-              <div 
-                key={i} 
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activePhotoIndex === i ? 'bg-white w-6' : 'bg-white/40 w-1.5'
-                }`} 
+
+        {photos.length > 1 && (
+          <div className="absolute bottom-4 right-4 flex gap-1.5">
+            {photos.map((_, i) => (
+              <span
+                key={i}
+                className="h-px transition-all duration-300"
+                style={{
+                  width: activePhotoIndex === i ? 22 : 12,
+                  background: activePhotoIndex === i ? 'var(--color-paper)' : 'rgba(245,239,228,0.4)',
+                }}
               />
             ))}
           </div>
         )}
 
-        <button 
+        <button
           onClick={onClose}
-          className="absolute top-12 left-4 w-10 h-10 bg-black/20 backdrop-blur rounded-full flex items-center justify-center text-white z-10"
+          className="absolute top-10 left-4 w-10 h-10 flex items-center justify-center"
+          style={{ background: 'var(--color-paper)', color: 'var(--color-ink)' }}
+          aria-label="Fechar"
         >
-          <X size={24} />
+          <X size={18} strokeWidth={1.5} />
         </button>
+
+        <span
+          className="absolute top-10 right-4 tag-mono"
+          style={ad.type === 'donation'
+            ? { background: 'var(--color-rust)', color: 'var(--color-paper)', borderColor: 'var(--color-rust)' }
+            : { background: 'var(--color-paper)' }
+          }
+        >
+          {ad.type === 'donation' ? '◆ doação' : '◇ troca'}
+        </span>
       </div>
-      
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        <div className="flex justify-between items-start">
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-4 relative z-10">
+        <div className="flex items-baseline justify-between mb-2">
+          <span className="kicker kicker-rust">Peça em destaque</span>
+          <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
+            #{ad.id.slice(0, 6).toUpperCase()}
+          </span>
+        </div>
+
+        <h2 className="serif-display text-[36px] leading-[0.95]" style={{ color: 'var(--color-ink)' }}>
+          {ad.title}
+        </h2>
+
+        <div className="flex items-center gap-3 mt-2">
+          <span className="kicker flex items-center gap-1">
+            <MapPin size={10} strokeWidth={1.5} />
+            {ad.neighborhood}, {ad.city}
+          </span>
+        </div>
+
+        <div className="rule-double my-5"></div>
+
+        {/* Spec table */}
+        <dl className="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">{ad.title}</h2>
-            <p className="text-blue-600 font-bold text-sm uppercase mt-1">
-              {ad.type === 'donation' ? 'Doação' : 'Disponível para Troca'}
-            </p>
+            <dt className="kicker mb-1">Grau resumido</dt>
+            <dd className="font-mono text-[15px]" style={{ color: 'var(--color-rust)' }}>
+              {ad.prescriptionSummary || '—'}
+            </dd>
           </div>
-          <div className="bg-slate-100 p-2 rounded-xl">
-            <AlertCircle size={20} className="text-slate-400" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-            <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">Resumo do Grau</p>
-            <p className="text-sm font-bold text-blue-800">{ad.prescriptionSummary}</p>
-          </div>
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Público</p>
-            <p className="text-sm font-bold text-slate-800 capitalize">
+          <div>
+            <dt className="kicker mb-1">Público</dt>
+            <dd className="font-display text-[16px] capitalize" style={{ color: 'var(--color-ink)' }}>
               {ad.targetAudience === 'adult' ? 'Adulto' : ad.targetAudience === 'child' ? 'Infantil' : 'Unissex'}
+            </dd>
+          </div>
+          <div>
+            <dt className="kicker mb-1">Estado</dt>
+            <dd className="font-display text-[16px]" style={{ color: 'var(--color-ink)' }}>
+              {ad.condition || '—'}
+            </dd>
+          </div>
+          <div>
+            <dt className="kicker mb-1">Modelo</dt>
+            <dd className="font-display text-[16px]" style={{ color: 'var(--color-ink)' }}>
+              {ad.frameStyle || '—'}
+            </dd>
+          </div>
+        </dl>
+
+        <div className="rule mb-5"></div>
+
+        <span className="kicker block mb-2">Notas do anunciante</span>
+        <p className="font-display text-[16px] leading-relaxed mb-6" style={{ color: 'var(--color-ink-2)' }}>
+          {ad.description}
+        </p>
+
+        <div className="rule mb-5"></div>
+
+        {/* Owner */}
+        <div className="flex items-center gap-4 py-2">
+          <div
+            className="w-12 h-12 hairline-strong flex items-center justify-center"
+            style={{ background: 'var(--color-paper-2)' }}
+          >
+            <span className="font-display text-lg" style={{ color: 'var(--color-ink)' }}>
+              {ad.userId.slice(0, 1).toUpperCase()}
+            </span>
+          </div>
+          <div className="flex-1">
+            <span className="kicker">Anunciante</span>
+            <p className="font-display text-[17px] leading-tight mt-0.5" style={{ color: 'var(--color-ink)' }}>
+              Doador #{ad.userId.slice(-4).toUpperCase()}
             </p>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="font-bold text-slate-800 mb-2">Descrição</h3>
-          <p className="text-slate-500 text-sm leading-relaxed">{ad.description}</p>
-        </div>
-
-        <div className="flex items-center p-4 bg-slate-50 rounded-2xl">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <User size={24} className="text-slate-400" />
-          </div>
-          <div className="ml-4 flex-1">
-            <p className="text-sm font-bold text-slate-800">Doador #{ad.userId.slice(-3)}</p>
-            <div className="flex items-center">
-              <Star size={10} className="text-yellow-500 fill-yellow-500 mr-1" />
-              <span className="text-[10px] text-slate-500">4.5 (8 avaliações)</span>
+            <div className="flex items-center gap-1 mt-0.5">
+              <Star size={10} className="fill-current" style={{ color: 'var(--color-amber)' }} />
+              <span className="numeral text-[11px]" style={{ color: 'var(--color-ink-3)' }}>4.5 · 8 aval.</span>
             </div>
           </div>
-          <ChevronRight size={20} className="text-slate-300" />
+          <ArrowUpRight size={16} strokeWidth={1.5} style={{ color: 'var(--color-ink-3)' }} />
         </div>
       </div>
 
-      <div className="p-6 border-t border-slate-100 bg-white space-y-3">
-        <button 
-          onClick={onGenerateQRCode}
-          className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold flex items-center justify-center transition-colors shadow-lg"
-        >
-          <QrCode size={20} className="mr-2" />
-          Gerar QR Code de Retirada
+      {/* Actions */}
+      <div
+        className="px-6 py-5 space-y-3"
+        style={{ background: 'var(--color-paper)', borderTop: '1px solid rgba(26,22,18,0.18)' }}
+      >
+        <button onClick={() => onManifestInterest(ad)} className="btn-ink w-full">
+          <MessageCircle size={14} strokeWidth={1.8} />
+          Manifestar interesse
         </button>
-        <div className="flex items-center gap-2 px-2 py-1 bg-purple-50 rounded-xl">
-          <Info size={14} className="text-purple-600" />
-          <p className="text-[10px] text-purple-700">Válido por 24h. Mostre ao doador no momento da entrega.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={onGenerateQRCode} className="btn-rust">
+            <QrCode size={14} strokeWidth={1.8} />
+            QR retirada
+          </button>
+          <button onClick={() => onCompleteAd(ad.id)} className="btn-sage">
+            <CheckCircle2 size={14} strokeWidth={1.8} />
+            Finalizar
+          </button>
         </div>
-        <button 
-          onClick={() => onCompleteAd(ad.id)}
-          className="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold flex items-center justify-center transition-colors"
-        >
-          <CheckCircle2 size={20} className="mr-2" />
-          Finalizar Doação/Troca
-        </button>
-        <button 
-          onClick={() => onManifestInterest(ad)}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold flex items-center justify-center transition-colors shadow-lg"
-        >
-          <MessageCircle size={20} className="mr-2" />
-          Manifestar Interesse
-        </button>
+        <p className="kicker text-center" style={{ color: 'var(--color-ink-4)' }}>
+          QR válido por 24h · entregue em mãos
+        </p>
       </div>
     </motion.div>
   );
