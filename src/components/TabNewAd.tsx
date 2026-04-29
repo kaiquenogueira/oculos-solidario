@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Camera, PlusCircle, X, AlertCircle } from 'lucide-react';
 
 interface NewAd {
@@ -8,6 +9,7 @@ interface NewAd {
   targetAudience: 'adult' | 'child' | 'unisex';
   prescriptionSummary: string;
   photoUrls: string[];
+  photoFiles: File[];
 }
 
 interface TabNewAdProps {
@@ -18,19 +20,36 @@ interface TabNewAdProps {
 }
 
 export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAdProps) {
-  const addPhoto = () => {
-    const mockPhotos = [
-      'https://images.unsplash.com/photo-1543512214-318c7553f230?q=80&w=1887&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1511499767390-903390e6f24a?q=80&w=2080&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1510103525167-27ea22f28122?q=80&w=2070&auto=format&fit=crop'
-    ];
-    const randomPhoto = mockPhotos[Math.floor(Math.random() * mockPhotos.length)];
-    setNewAd({ ...newAd, photoUrls: [...newAd.photoUrls, randomPhoto] });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const filesArray = Array.from(e.target.files);
+      const newUrls = filesArray.map(f => URL.createObjectURL(f));
+      
+      setNewAd({ 
+        ...newAd, 
+        photoUrls: [...newAd.photoUrls, ...newUrls],
+        photoFiles: [...(newAd.photoFiles || []), ...filesArray]
+      });
+    }
   };
 
   const removePhoto = (index: number) => {
-    setNewAd({ ...newAd, photoUrls: newAd.photoUrls.filter((_, i) => i !== index) });
+    // If it's an object URL, we should probably revoke it, but it's okay for now
+    const urls = [...newAd.photoUrls];
+    urls.splice(index, 1);
+    
+    const files = [...(newAd.photoFiles || [])];
+    if (files.length > index) { // only remove file if it belongs to a local file
+       files.splice(index, 1);
+    }
+
+    setNewAd({ ...newAd, photoUrls: urls, photoFiles: files });
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -38,6 +57,14 @@ export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAd
       <h1 className="text-2xl font-bold text-slate-800 mb-2">Novo Anúncio</h1>
       
       <div className="space-y-4">
+        <input 
+          type="file" 
+          accept="image/*" 
+          multiple
+          className="hidden" 
+          ref={fileInputRef} 
+          onChange={handleFileChange} 
+        />
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {newAd.photoUrls.map((url, i) => (
             <div key={i} className="relative shrink-0 w-32 aspect-square rounded-2xl overflow-hidden border border-slate-200">
@@ -51,7 +78,7 @@ export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAd
             </div>
           ))}
           <button 
-            onClick={addPhoto}
+            onClick={triggerFileInput}
             className="shrink-0 w-32 aspect-square bg-slate-100 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-blue-300 transition-all group"
           >
             <PlusCircle size={24} className="mb-1 group-hover:scale-110 transition-transform" />
@@ -61,7 +88,7 @@ export function TabNewAd({ newAd, setNewAd, isModerating, onCreateAd }: TabNewAd
         
         {newAd.photoUrls.length === 0 && (
           <button 
-            onClick={addPhoto}
+            onClick={triggerFileInput}
             className="w-full aspect-video bg-slate-100 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-blue-300 transition-all group overflow-hidden"
           >
             <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />

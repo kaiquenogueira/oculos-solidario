@@ -63,7 +63,7 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleAuthUser = (supabaseUser: any) => {
+  const handleAuthUser = async (supabaseUser: any) => {
     const newUser: User = {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
@@ -78,10 +78,51 @@ export default function App() {
     };
     login(newUser);
     
-    // Inject Mock Data if empty to keep UI functional during Sprint 2
-    if (useStore.getState().ads.length === 0) {
-      setAds(MOCK_ADS);
-      MOCK_PRESCRIPTION_REQUESTS.forEach(req => useStore.getState().addPrescriptionRequest(req));
+    // Fetch Data from DB
+    const { data: adsData } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
+    if (adsData) {
+      const fetchedAds: Ad[] = adsData.map(d => ({
+        id: d.id,
+        userId: d.user_id,
+        title: d.title,
+        description: d.description,
+        type: d.type,
+        condition: d.condition,
+        frameStyle: d.frame_style,
+        targetAudience: d.target_audience,
+        prescriptionSummary: d.prescription_summary,
+        lensDetails: d.lens_details,
+        city: d.city,
+        state: d.state,
+        neighborhood: d.neighborhood,
+        status: d.status,
+        photoUrl: d.photo_urls[0],
+        photoUrls: d.photo_urls,
+        createdAt: new Date(d.created_at).getTime(),
+      }));
+      setAds(fetchedAds);
+    }
+
+    const { data: reqData } = await supabase.from('prescription_requests').select('*').order('created_at', { ascending: false });
+    if (reqData) {
+      useStore.getState().prescriptionRequests.forEach(r => useStore.getState().completePrescriptionRequest(r.id)); // Clear current requests if any
+      reqData.forEach(d => {
+        useStore.getState().addPrescriptionRequest({
+          id: d.id,
+          userId: d.user_id,
+          patientName: d.patient_name,
+          description: d.description,
+          prescriptionPhotoUrl: d.prescription_photo_url,
+          documentPhotoUrl: d.document_photo_url,
+          prescriptionSummary: d.prescription_summary,
+          status: d.status,
+          donorId: d.donor_id,
+          city: d.city,
+          state: d.state,
+          neighborhood: d.neighborhood,
+          createdAt: new Date(d.created_at).getTime(),
+        });
+      });
     }
   };
 
@@ -116,6 +157,7 @@ export default function App() {
     targetAudience: 'adult' as 'adult' | 'child' | 'unisex',
     prescriptionSummary: '',
     photoUrls: [] as string[],
+    photoFiles: [] as File[],
   });
 
   if (!isAuthenticated) {
@@ -123,35 +165,82 @@ export default function App() {
   }
 
   const handleCreateAd = async () => {
-    if (!newAd.title || !newAd.description) return;
+    if (!newAd.title || !newAd.description || !user) return;
     
     setIsModerating(true);
     const result = await moderateAd(newAd.title, newAd.description);
-    setIsModerating(false);
 
     if (result.status === 'blocked') {
+      setIsModerating(false);
       alert(`Anúncio bloqueado: ${result.reason}`);
       return;
     }
 
-    const ad: Ad = {
-      id: crypto.randomUUID(),
-      userId: user?.id || 'anon',
+    // 1. Upload images
+    const uploadedUrls: string[] = [];
+    for (const file of newAd.photoFiles || []) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from('public-glasses')
+        .upload(fileName, file);
+      
+      if (!error && data) {
+        const { data: publicData } = supabase.storage.from('public-glasses').getPublicUrl(data.path);
+        uploadedUrls.push(publicData.publicUrl);
+      }
+    }
+
+    const finalPhotoUrls = [...newAd.photoUrls, ...uploadedUrls];
+    if (finalPhotoUrls.length === 0) {
+       // fallback if no photo uploaded
+       finalPhotoUrls.push('https://images.unsplash.com/photo-1543512214-318c7553f230?q=80&w=1887&auto=format&fit=crop');
+    }
+
+    // 2. Insert into DB
+    const { data: adData, error: insertError } = await supabase.from('ads').insert({
+      user_id: user.id,
       title: newAd.title,
       description: newAd.description,
       type: newAd.type,
-      condition: 'Bom', // Default
-      frameStyle: newAd.frameStyle || 'Não especificado',
-      targetAudience: newAd.targetAudience,
-      prescriptionSummary: newAd.prescriptionSummary,
-      lensDetails: '',
-      city: user?.city || '',
-      state: user?.state || '',
-      neighborhood: user?.neighborhood || '',
+      condition: 'Bom',
+      frame_style: newAd.frameStyle || 'Não especificado',
+      target_audience: newAd.targetAudience,
+      prescription_summary: newAd.prescriptionSummary,
+      lens_details: '',
+      city: user.city || '',
+      state: user.state || '',
+      neighborhood: user.neighborhood || '',
       status: result.status === 'review' ? 'review' : 'active',
-      photoUrl: newAd.photoUrls[0] || 'https://images.unsplash.com/photo-1543512214-318c7553f230?q=80&w=1887&auto=format&fit=crop',
-      photoUrls: newAd.photoUrls.length > 0 ? newAd.photoUrls : ['https://images.unsplash.com/photo-1543512214-318c7553f230?q=80&w=1887&auto=format&fit=crop'],
-      createdAt: Date.now(),
+      photo_urls: finalPhotoUrls
+    }).select().single();
+
+    setIsModerating(false);
+
+    if (insertError) {
+      alert(`Erro ao criar anúncio: ${insertError.message}`);
+      return;
+    }
+
+    // 3. Update local store
+    const ad: Ad = {
+      id: adData.id,
+      userId: adData.user_id,
+      title: adData.title,
+      description: adData.description,
+      type: adData.type,
+      condition: adData.condition,
+      frameStyle: adData.frame_style,
+      targetAudience: adData.target_audience,
+      prescriptionSummary: adData.prescription_summary,
+      lensDetails: adData.lens_details,
+      city: adData.city,
+      state: adData.state,
+      neighborhood: adData.neighborhood,
+      status: adData.status,
+      photoUrl: adData.photo_urls[0],
+      photoUrls: adData.photo_urls,
+      createdAt: new Date(adData.created_at).getTime(),
     };
 
     setAds([ad, ...ads]);
@@ -163,6 +252,7 @@ export default function App() {
       targetAudience: 'adult',
       prescriptionSummary: '',
       photoUrls: [],
+      photoFiles: [],
     });
     
     if (result.status === 'review') {
