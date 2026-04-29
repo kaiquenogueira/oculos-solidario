@@ -1,9 +1,12 @@
-import { X, Camera, AlertCircle } from 'lucide-react';
+import { useRef } from 'react';
+import { X, Camera, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface NewRequest {
   patientName: string;
   description: string;
   prescriptionSummary: string;
+  prescriptionPhotoFile?: File;
+  documentPhotoFile?: File;
 }
 
 interface ModalNewRequestFormProps {
@@ -12,6 +15,7 @@ interface ModalNewRequestFormProps {
   newRequest: NewRequest;
   setNewRequest: (req: NewRequest) => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 }
 
 export function ModalNewRequestForm({ 
@@ -19,8 +23,12 @@ export function ModalNewRequestForm({
   onClose, 
   newRequest, 
   setNewRequest, 
-  onSubmit 
+  onSubmit,
+  isSubmitting = false
 }: ModalNewRequestFormProps) {
+  const prescriptionInputRef = useRef<HTMLInputElement>(null);
+  const documentInputRef = useRef<HTMLInputElement>(null);
+
   if (!show) return null;
 
   return (
@@ -65,13 +73,60 @@ export function ModalNewRequestForm({
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          <button className="w-full py-6 bg-slate-100 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 group">
-             <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />
-             <span className="text-sm font-medium">Foto da Receita</span>
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            ref={prescriptionInputRef}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setNewRequest({...newRequest, prescriptionPhotoFile: e.target.files[0]});
+              }
+            }}
+          />
+          <button 
+            onClick={() => prescriptionInputRef.current?.click()}
+            className={`w-full py-6 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all group ${newRequest.prescriptionPhotoFile ? 'bg-green-50 border-green-200 text-green-600' : 'bg-slate-100 border-slate-200 text-slate-400'}`}
+          >
+             {newRequest.prescriptionPhotoFile ? (
+               <>
+                 <CheckCircle2 size={32} className="mb-2" />
+                 <span className="text-sm font-medium">Receita Anexada</span>
+               </>
+             ) : (
+               <>
+                 <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />
+                 <span className="text-sm font-medium">Anexar Receita (Obrigatório)</span>
+               </>
+             )}
           </button>
-          <button className="w-full py-6 bg-slate-100 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 group">
-             <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />
-             <span className="text-sm font-medium">Foto do Documento (ID)</span>
+
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            ref={documentInputRef}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setNewRequest({...newRequest, documentPhotoFile: e.target.files[0]});
+              }
+            }}
+          />
+          <button 
+            onClick={() => documentInputRef.current?.click()}
+            className={`w-full py-6 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all group ${newRequest.documentPhotoFile ? 'bg-green-50 border-green-200 text-green-600' : 'bg-slate-100 border-slate-200 text-slate-400'}`}
+          >
+             {newRequest.documentPhotoFile ? (
+               <>
+                 <CheckCircle2 size={32} className="mb-2" />
+                 <span className="text-sm font-medium">Documento Anexado</span>
+               </>
+             ) : (
+               <>
+                 <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />
+                 <span className="text-sm font-medium">Anexar Documento (ID)</span>
+               </>
+             )}
           </button>
         </div>
 
@@ -86,9 +141,10 @@ export function ModalNewRequestForm({
       <div className="p-6 border-t border-slate-100">
          <button 
            onClick={onSubmit}
-           className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg"
+           disabled={isSubmitting}
+           className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all ${isSubmitting ? 'bg-slate-300 text-slate-500' : 'bg-blue-600 text-white active:scale-95'}`}
          >
-           Enviar Pedido
+           {isSubmitting ? 'Enviando e protegendo arquivos...' : 'Enviar Pedido'}
          </button>
       </div>
     </div>

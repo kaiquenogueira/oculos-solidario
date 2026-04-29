@@ -143,7 +143,15 @@ export default function App() {
 
   const [activeChat, setActiveChat] = useState<any | null>(null);
 
-  const [newRequest, setNewRequest] = useState({
+  interface NewRequestState {
+    patientName: string;
+    description: string;
+    prescriptionSummary: string;
+    prescriptionPhotoFile?: File;
+    documentPhotoFile?: File;
+  }
+
+  const [newRequest, setNewRequest] = useState<NewRequestState>({
     patientName: '',
     description: '',
     prescriptionSummary: '',
@@ -159,6 +167,8 @@ export default function App() {
     photoUrls: [] as string[],
     photoFiles: [] as File[],
   });
+
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   if (!isAuthenticated) {
     return <LoginView />;
@@ -264,26 +274,87 @@ export default function App() {
     setActiveTab('home');
   };
 
-  const handleCreateRequest = () => {
-    const request: PrescriptionRequest = {
-      id: crypto.randomUUID(),
-      userId: user?.id || 'anon',
-      patientName: newRequest.patientName,
-      description: newRequest.description,
-      prescriptionSummary: newRequest.prescriptionSummary,
-      prescriptionPhotoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1000&auto=format&fit=crop',
-      documentPhotoUrl: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?q=80&w=1000&auto=format&fit=crop',
-      status: 'pending',
-      city: user?.city || '',
-      state: user?.state || '',
-      neighborhood: user?.neighborhood || '',
-      createdAt: Date.now(),
+  const handleCreateRequest = async () => {
+    if (!newRequest.patientName || !newRequest.description || !user) {
+      alert('Preencha os campos obrigatórios.');
+      return;
+    }
+    if (!newRequest.prescriptionPhotoFile || !newRequest.documentPhotoFile) {
+      alert('As fotos da receita e documento são obrigatórias.');
+      return;
+    }
+
+    setIsSubmittingRequest(true);
+
+    const uploadFile = async (file: File) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from('private-prescriptions')
+        .upload(fileName, file);
+      
+      if (error || !data) throw error || new Error('Upload failed');
+      return data.path;
     };
 
-    addPrescriptionRequest(request);
-    setShowNewRequestForm(false);
-    setNewRequest({ patientName: '', description: '', prescriptionSummary: '' });
-    alert('Seu pedido de ajuda foi enviado com sucesso!');
+    try {
+      const prescriptionPath = await uploadFile(newRequest.prescriptionPhotoFile);
+      const documentPath = await uploadFile(newRequest.documentPhotoFile);
+
+      const { data: requestData, error: insertError } = await supabase.from('prescription_requests').insert({
+        user_id: user.id,
+        patient_name: newRequest.patientName,
+        description: newRequest.description,
+        prescription_photo_url: prescriptionPath, // save path instead of URL for private bucket
+        document_photo_url: documentPath,
+        prescription_summary: newRequest.prescriptionSummary,
+        status: 'pending',
+        city: user.city || '',
+        state: user.state || '',
+        neighborhood: user.neighborhood || ''
+      }).select().single();
+
+      if (insertError) throw insertError;
+
+      const request: PrescriptionRequest = {
+        id: requestData.id,
+        userId: requestData.user_id,
+        patientName: requestData.patient_name,
+        description: requestData.description,
+        prescriptionSummary: requestData.prescription_summary,
+        prescriptionPhotoUrl: requestData.prescription_photo_url,
+        documentPhotoUrl: requestData.document_photo_url,
+        status: requestData.status,
+        city: requestData.city,
+        state: requestData.state,
+        neighborhood: requestData.neighborhood,
+        createdAt: new Date(requestData.created_at).getTime(),
+      };
+
+      addPrescriptionRequest(request);
+      setShowNewRequestForm(false);
+      setNewRequest({ patientName: '', description: '', prescriptionSummary: '', prescriptionPhotoFile: undefined, documentPhotoFile: undefined });
+      alert('Seu pedido de ajuda foi enviado com sucesso!');
+    } catch (e: any) {
+      alert(`Erro ao criar pedido: ${e.message}`);
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
+
+  const handleAdoptRequest = async (requestId: string, donorId: string) => {
+    const { error } = await supabase
+      .from('prescription_requests')
+      .update({ status: 'adopted', donor_id: donorId })
+      .eq('id', requestId);
+    
+    if (error) {
+      alert(`Erro ao adotar pedido: ${error.message}`);
+      return;
+    }
+    
+    adoptPrescriptionRequest(requestId, donorId);
+    alert('Você adotou este pedido! Entre em contato com o paciente.');
   };
 
   const renderTabContent = () => {
@@ -368,7 +439,7 @@ export default function App() {
               request={selectedRequest}
               onClose={() => setSelectedRequest(null)}
               user={user}
-              onAdopt={(id, uid) => { adoptPrescriptionRequest(id, uid); alert('Você adotou este pedido! Entre em contato com o paciente.'); }}
+              onAdopt={handleAdoptRequest}
               onShowQR={() => setShowRequestQRModal(true)}
             />
           )}
@@ -396,6 +467,7 @@ export default function App() {
           newRequest={newRequest}
           setNewRequest={setNewRequest}
           onSubmit={handleCreateRequest}
+          isSubmitting={isSubmittingRequest}
         />
 
         <ModalQRCode 
