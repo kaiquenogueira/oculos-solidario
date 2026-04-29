@@ -8,7 +8,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useStore, Ad, PrescriptionRequest, User } from '../store/useStore';
-import { moderateAd } from '../services/moderateService';
 import { createClient } from '../lib/supabase/client';
 
 // Components
@@ -177,14 +176,7 @@ export default function App() {
   const handleCreateAd = async () => {
     if (!newAd.title || !newAd.description || !user) return;
     
-    setIsModerating(true);
-    const result = await moderateAd(newAd.title, newAd.description);
-
-    if (result.status === 'blocked') {
-      setIsModerating(false);
-      alert(`Anúncio bloqueado: ${result.reason}`);
-      return;
-    }
+    setIsModerating(true); // Keeping the UI loading state while uploading
 
     // 1. Upload images
     const uploadedUrls: string[] = [];
@@ -265,11 +257,7 @@ export default function App() {
       photoFiles: [],
     });
     
-    if (result.status === 'review') {
-      alert('Anúncio enviado para revisão da moderação.');
-    } else {
-      alert('Anúncio publicado com sucesso!');
-    }
+    alert('Anúncio enviado para moderação! Em breve estará disponível se aprovado.');
     
     setActiveTab('home');
   };

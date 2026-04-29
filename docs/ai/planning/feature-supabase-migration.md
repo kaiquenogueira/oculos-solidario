@@ -10,8 +10,8 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 
 - [x] Milestone 1: Next.js Foundation & Database Schema Update
 - [x] Milestone 2: Authentication & Storage implementation
-- [ ] Milestone 3: Data Migration (Ads & Requests)
-- [ ] Milestone 4: AI Webhook Integration & Final Testing
+- [x] Milestone 3: Data Migration (Ads & Requests)
+- [x] Milestone 4: AI Webhook Integration & Final Testing
 
 ## Task Breakdown
 
@@ -25,11 +25,11 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 - [x] Task 2.2: Storage Integration for `public-glasses` and `private-prescriptions` buckets.
 
 ### Phase 3: Data Migration
-- [ ] Task 3.1: Migrate Ads fetching and creation logic to Supabase queries.
-- [ ] Task 3.2: Migrate Prescription Requests fetching and creation to Supabase queries.
+- [x] Task 3.1: Migrate Ads fetching and creation logic to Supabase queries.
+- [x] Task 3.2: Migrate Prescription Requests fetching and creation to Supabase queries.
 
 ### Phase 4: AI Webhook
-- [ ] Task 4.1: Implement Gemini AI Moderation Webhook API route to process ads asynchronously.
+- [x] Task 4.1: Implement Gemini AI Moderation Webhook API route to process ads asynchronously.
 
 ## Dependencies
 
