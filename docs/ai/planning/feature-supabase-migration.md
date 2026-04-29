@@ -9,7 +9,7 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 ## Milestones
 
 - [x] Milestone 1: Next.js Foundation & Database Schema Update
-- [ ] Milestone 2: Authentication & Storage implementation
+- [x] Milestone 2: Authentication & Storage implementation
 - [ ] Milestone 3: Data Migration (Ads & Requests)
 - [ ] Milestone 4: AI Webhook Integration & Final Testing
 
@@ -21,8 +21,8 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 - [x] Task 1.3: Update DB Schema for Geolocation (`latitude` and `longitude` fields) in migrations.
 
 ### Phase 2: Auth & Storage
-- [ ] Task 2.1: Supabase Auth Implementation (Magic Links) replacing mock states.
-- [ ] Task 2.2: Storage Integration for `public-glasses` and `private-prescriptions` buckets.
+- [x] Task 2.1: Supabase Auth Implementation (Magic Links) replacing mock states.
+- [x] Task 2.2: Storage Integration for `public-glasses` and `private-prescriptions` buckets.
 
 ### Phase 3: Data Migration
 - [ ] Task 3.1: Migrate Ads fetching and creation logic to Supabase queries.

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { User as UserIcon, Send, ChevronLeft } from 'lucide-react';
-import { supabase } from '../services/supabase';
+import { createClient } from '../lib/supabase/client';
 import { User } from '../store/useStore';
 
 interface TabChatProps {
@@ -10,6 +10,7 @@ interface TabChatProps {
 }
 
 export function TabChat({ user, activeChat, onSelectChat }: TabChatProps) {
+  const supabase = createClient();
   const [chats, setChats] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');

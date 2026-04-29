@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Eye, Mail, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
-import { supabase } from '../services/supabase';
+import { createClient } from '../lib/supabase/client';
 
 export function LoginView() {
+  const supabase = createClient();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -17,7 +18,7 @@ export function LoginView() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : '',
+        emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '',
       }
     });
 
@@ -33,7 +34,7 @@ export function LoginView() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: typeof window !== 'undefined' ? window.location.origin : '',
+        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '',
       }
     });
   };

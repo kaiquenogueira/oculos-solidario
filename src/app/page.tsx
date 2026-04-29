@@ -9,8 +9,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useStore, Ad, PrescriptionRequest, User } from '../store/useStore';
 import { moderateAd } from '../services/moderateService';
-import { supabase } from '../services/supabase';
-import { MOCK_ADS, MOCK_PRESCRIPTION_REQUESTS } from '../data/mockData';
+import { createClient } from '../lib/supabase/client';
 
 // Components
 import { Navigation } from '../components/Navigation';
@@ -33,6 +32,7 @@ import { MapOverlay } from '../components/MapOverlay';
 type Tab = 'home' | 'search' | 'solidarity' | 'new' | 'chat' | 'profile';
 
 export default function App() {
+  const supabase = createClient();
   const { 
     user, login, isAuthenticated, ads, setAds, completeAd, 
     prescriptionRequests, addPrescriptionRequest, adoptPrescriptionRequest, completePrescriptionRequest 
@@ -368,6 +368,26 @@ export default function App() {
     setActiveTab('chat');
   };
 
+  const handleCompleteAd = async (adId: string) => {
+    const { error } = await supabase.from('ads').update({ status: 'completed' }).eq('id', adId);
+    if (!error) {
+      completeAd(adId);
+      setShowRatingModal(true);
+      setSelectedAd(null);
+    } else {
+      alert(`Erro ao finalizar: ${error.message}`);
+    }
+  };
+
+  const handleCompletePrescription = async (reqId: string) => {
+    const { error } = await supabase.from('prescription_requests').update({ status: 'completed' }).eq('id', reqId);
+    if (!error) {
+      completePrescriptionRequest(reqId);
+    } else {
+      alert(`Erro ao finalizar: ${error.message}`);
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
@@ -444,7 +464,7 @@ export default function App() {
               activePhotoIndex={activePhotoIndex}
               setActivePhotoIndex={setActivePhotoIndex}
               onGenerateQRCode={() => setShowQRCodeModal(true)}
-              onCompleteAd={(id) => { completeAd(id); setShowRatingModal(true); setSelectedAd(null); }}
+              onCompleteAd={handleCompleteAd}
               onManifestInterest={async (ad) => { 
                 if (user) {
                    const { data: existing } = await supabase.from('messages')
@@ -483,8 +503,8 @@ export default function App() {
           onClose={() => setShowScannerModal(false)}
           ads={ads}
           prescriptionRequests={prescriptionRequests}
-          onCompleteAd={completeAd}
-          onCompletePrescription={completePrescriptionRequest}
+          onCompleteAd={handleCompleteAd}
+          onCompletePrescription={handleCompletePrescription}
         />
 
         <ModalNewRequestForm 

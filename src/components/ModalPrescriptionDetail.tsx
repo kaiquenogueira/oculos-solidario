@@ -1,6 +1,8 @@
 import { ChevronRight, User, Info, HandHeart, QrCode } from 'lucide-react';
 import { motion } from 'motion/react';
 import { PrescriptionRequest, User as UserType } from '../store/useStore';
+import { createClient } from '../lib/supabase/client';
+import { useEffect, useState } from 'react';
 
 interface ModalPrescriptionDetailProps {
   request: PrescriptionRequest | null;
@@ -17,6 +19,25 @@ export function ModalPrescriptionDetail({
   onAdopt, 
   onShowQR 
 }: ModalPrescriptionDetailProps) {
+  const supabase = createClient();
+  const [prescriptionUrl, setPrescriptionUrl] = useState<string>('');
+  const [documentUrl, setDocumentUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (!request) return;
+    const fetchUrls = async () => {
+      if (request.prescriptionPhotoUrl) {
+        const { data } = await supabase.storage.from('private-prescriptions').createSignedUrl(request.prescriptionPhotoUrl, 60 * 60);
+        if (data) setPrescriptionUrl(data.signedUrl);
+      }
+      if (request.documentPhotoUrl) {
+        const { data } = await supabase.storage.from('private-prescriptions').createSignedUrl(request.documentPhotoUrl, 60 * 60);
+        if (data) setDocumentUrl(data.signedUrl);
+      }
+    };
+    fetchUrls();
+  }, [request]);
+
   if (!request) return null;
 
   return (
@@ -59,13 +80,13 @@ export function ModalPrescriptionDetail({
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-400 uppercase">Receita Médica</h4>
             <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-               <img src={request.prescriptionPhotoUrl} className="w-full h-full object-cover" alt="Receita" />
+               {prescriptionUrl && <img src={prescriptionUrl} className="w-full h-full object-cover" alt="Receita" />}
             </div>
           </div>
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-400 uppercase">Documento Ident.</h4>
             <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-               <img src={request.documentPhotoUrl} className="w-full h-full object-cover" alt="Documento" />
+               {documentUrl && <img src={documentUrl} className="w-full h-full object-cover" alt="Documento" />}
             </div>
           </div>
         </div>
