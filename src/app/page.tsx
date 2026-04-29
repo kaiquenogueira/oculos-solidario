@@ -213,7 +213,7 @@ export default function App() {
       city: user.city || '',
       state: user.state || '',
       neighborhood: user.neighborhood || '',
-      status: result.status === 'review' ? 'review' : 'active',
+      status: 'review',
       photo_urls: finalPhotoUrls
     }).select().single();
 

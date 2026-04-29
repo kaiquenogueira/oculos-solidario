@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,200..900,0..100,0..1;1,9..144,200..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap');
 @import "tailwindcss";
 
 /* ──────────────────────────────────────────────────────────────────
@@ -5,8 +6,6 @@
    A warm paper-and-ink aesthetic inspired by craft optometry,
    tortoiseshell frames, vintage eyewear catalogues, and editorial print.
    ──────────────────────────────────────────────────────────────────*/
-
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,200..900,0..100,0..1;1,9..144,200..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap');
 
 @theme {
   /* Paper & Ink palette */
