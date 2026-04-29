@@ -342,7 +342,7 @@ export default function App() {
     }
   };
 
-  const handleAdoptRequest = async (requestId: string, donorId: string) => {
+  const handleAdoptRequest = async (requestId: string, donorId: string, patientUserId: string) => {
     const { error } = await supabase
       .from('prescription_requests')
       .update({ status: 'adopted', donor_id: donorId })
@@ -353,8 +353,19 @@ export default function App() {
       return;
     }
     
+    if (user) {
+       const { data: existing } = await supabase.from('messages')
+         .select('id').or(`and(sender_id.eq.${user.id},receiver_id.eq.${patientUserId}),and(sender_id.eq.${patientUserId},receiver_id.eq.${user.id})`).limit(1);
+       if (!existing || existing.length === 0) {
+         await supabase.from('messages').insert({ sender_id: user.id, receiver_id: patientUserId, content: `Olá! Eu gostaria de ajudar com o seu pedido de lentes.`});
+       }
+    }
+
     adoptPrescriptionRequest(requestId, donorId);
-    alert('Você adotou este pedido! Entre em contato com o paciente.');
+    alert('Você adotou este pedido! Redirecionando para o chat.');
+    setActiveChat({ id: patientUserId, name: `Paciente #${patientUserId.slice(0,4)}` });
+    setSelectedRequest(null);
+    setActiveTab('chat');
   };
 
   const renderTabContent = () => {
@@ -383,7 +394,11 @@ export default function App() {
           onCreateAd={handleCreateAd} 
         />;
       case 'chat':
-        return <TabChat onSelectChat={setActiveChat} />;
+        return <TabChat 
+          user={user} 
+          activeChat={activeChat} 
+          onSelectChat={setActiveChat} 
+        />;
       case 'profile':
         return <TabProfile 
           user={user} 
@@ -430,7 +445,18 @@ export default function App() {
               setActivePhotoIndex={setActivePhotoIndex}
               onGenerateQRCode={() => setShowQRCodeModal(true)}
               onCompleteAd={(id) => { completeAd(id); setShowRatingModal(true); setSelectedAd(null); }}
-              onManifestInterest={(ad) => { setActiveChat({ name: `Doador #${ad.userId.slice(-3)}` }); setSelectedAd(null); setActiveTab('chat'); }}
+              onManifestInterest={async (ad) => { 
+                if (user) {
+                   const { data: existing } = await supabase.from('messages')
+                     .select('id').or(`and(sender_id.eq.${user.id},receiver_id.eq.${ad.userId}),and(sender_id.eq.${ad.userId},receiver_id.eq.${user.id})`).limit(1);
+                   if (!existing || existing.length === 0) {
+                     await supabase.from('messages').insert({ sender_id: user.id, receiver_id: ad.userId, content: `Olá, tenho interesse no seu anúncio do óculos de grau!`});
+                   }
+                }
+                setActiveChat({ id: ad.userId, name: `Doador #${ad.userId.slice(0,4)}` }); 
+                setSelectedAd(null); 
+                setActiveTab('chat'); 
+              }}
             />
           )}
 
@@ -439,7 +465,7 @@ export default function App() {
               request={selectedRequest}
               onClose={() => setSelectedRequest(null)}
               user={user}
-              onAdopt={handleAdoptRequest}
+              onAdopt={(id, uid) => handleAdoptRequest(id, uid, selectedRequest.userId)}
               onShowQR={() => setShowRequestQRModal(true)}
             />
           )}
