@@ -10,44 +10,44 @@ interface TabSolidarityProps {
 
 export function TabSolidarity({ prescriptionRequests, onSelectRequest, onOpenNewRequestForm }: TabSolidarityProps) {
   return (
-    <div className="px-6 pt-10 pb-28">
+    <div className="px-5 safe-top pt-4 pb-32">
       {/* Header */}
       <header className="mb-5">
         <span className="kicker kicker-sage">Caderno solidário</span>
-        <h1 className="serif-display text-[44px] mt-1" style={{ color: 'var(--color-ink)' }}>
+        <h1 className="serif-display text-4xl mt-1" style={{ color: 'var(--color-ink)' }}>
           <span className="italic" style={{ color: 'var(--color-sage)' }}>Apadrinhe</span><br/>uma visão.
         </h1>
-        <p className="font-display italic text-base mt-3 max-w-[90%]" style={{ color: 'var(--color-ink-3)' }}>
+        <p className="text-sm mt-3 max-w-[92%] leading-relaxed" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
           Há quem tenha a armação mas não as lentes. Há quem possa custear as lentes mas nunca pediu o endereço.
         </p>
       </header>
 
-      <div className="rule-double mb-6"></div>
-
       {/* Manifesto card */}
       <section
-        className="relative overflow-hidden p-7 mb-8 grain-overlay"
+        className="relative overflow-hidden p-5 mb-6 rounded-2xl grain-overlay"
         style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
       >
-        <div className="flex items-baseline gap-3 mb-3 relative z-10">
-          <span className="numeral text-[10px]" style={{ color: 'var(--color-sage-soft)' }}>§ 01</span>
-          <span className="font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: 'var(--color-sage-soft)' }}>
-            O contrato
-          </span>
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-4 h-0.5 rounded-full" style={{ background: 'var(--color-sage-soft)' }} />
+            <span className="text-xs tracking-wider uppercase font-medium" style={{ color: 'var(--color-sage-soft)', fontFamily: 'var(--font-mono)', fontSize: '10px' }}>
+              O contrato
+            </span>
+          </div>
+          <p
+            className="font-display text-lg leading-snug"
+            style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
+          >
+            Ao adotar um pedido, o padrinho compromete-se a <span className="italic" style={{ color: 'var(--color-sage-soft)' }}>custear as lentes</span> conforme a receita médica apresentada.
+          </p>
+          <p className="text-xs mt-3 italic opacity-70" style={{ fontFamily: 'var(--font-display)' }}>
+            A entrega é confirmada por leitura de QR Code — sem burocracia.
+          </p>
         </div>
-        <p
-          className="font-display text-[24px] leading-tight relative z-10"
-          style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
-        >
-          Ao adotar um pedido, o padrinho compromete-se a <span className="italic" style={{ color: 'var(--color-sage-soft)' }}>custear as lentes</span> conforme a receita médica apresentada.
-        </p>
-        <p className="font-display italic text-sm mt-4 relative z-10" style={{ color: 'var(--color-paper-3)', opacity: 0.75 }}>
-          A entrega é confirmada por leitura de QR Code — sem burocracia, sem rastros desnecessários.
-        </p>
 
         <span
-          className="absolute -right-2 -bottom-2 eye-mark text-[120px] opacity-15"
-          style={{ color: 'var(--color-sage-soft)' }}
+          className="absolute -right-2 -bottom-2 eye-mark opacity-10"
+          style={{ color: 'var(--color-sage-soft)', fontSize: '90px' }}
           aria-hidden
         >
           ♡
@@ -55,74 +55,74 @@ export function TabSolidarity({ prescriptionRequests, onSelectRequest, onOpenNew
       </section>
 
       {/* List header */}
-      <div className="flex items-end justify-between mb-4">
-        <div>
-          <span className="numeral text-[11px]" style={{ color: 'var(--color-sage)' }}>§ 02</span>
-          <h3 className="serif-display text-[26px] mt-1" style={{ color: 'var(--color-ink)' }}>
-            Pedidos <span className="italic">em aberto</span>
-          </h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-sage)' }} />
+          <span className="kicker" style={{ fontSize: '11px' }}>Pedidos em aberto</span>
         </div>
         <button
           onClick={onOpenNewRequestForm}
-          className="font-mono text-[10px] tracking-[0.2em] uppercase inline-flex items-center gap-1.5 pb-0.5"
-          style={{ color: 'var(--color-sage)', borderBottom: '1px solid var(--color-sage)' }}
+          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full"
+          style={{
+            color: 'var(--color-sage)',
+            background: 'var(--color-sage-bg)',
+            fontFamily: 'var(--font-mono)',
+            letterSpacing: '0.06em',
+          }}
         >
-          <Plus size={12} strokeWidth={1.8} /> Pedir ajuda
+          <Plus size={14} strokeWidth={2} /> Pedir ajuda
         </button>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {prescriptionRequests.length === 0 ? (
-          <div className="hairline p-10 text-center" style={{ background: 'var(--color-paper-2)' }}>
-            <span className="eye-mark text-[42px]" style={{ color: 'var(--color-ink-4)' }}>—∅—</span>
-            <p className="font-display italic mt-3" style={{ color: 'var(--color-ink-3)' }}>
+          <div className="rounded-2xl p-10 text-center" style={{ background: 'var(--color-paper-2)' }}>
+            <span className="eye-mark text-4xl" style={{ color: 'var(--color-ink-4)' }}>—∅—</span>
+            <p className="font-display italic mt-3 text-sm" style={{ color: 'var(--color-ink-3)' }}>
               Nenhum pedido neste momento.
             </p>
           </div>
         ) : (
-          prescriptionRequests.map((req, i) => (
+          prescriptionRequests.map((req) => (
             <motion.button
               key={req.id}
-              whileTap={{ scale: 0.99 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => onSelectRequest(req)}
-              className="w-full text-left relative paper-edge p-5 grain-overlay"
-              style={{ background: 'var(--color-paper)' }}
+              className="w-full text-left card-paper p-5"
             >
-              {/* Index marker */}
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="numeral text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
-                  N.º {String(i + 1).padStart(3, '0')}
+              {/* Status + ID */}
+              <div className="flex items-center justify-between mb-3">
+                <span className="numeral text-xs" style={{ color: 'var(--color-ink-4)' }}>
+                  #{req.id.slice(0, 6).toUpperCase()}
                 </span>
                 {req.status === 'adopted' ? (
-                  <span className="tag-sage">✓ Apadrinhado</span>
+                  <span className="status-pill status-adopted">Apadrinhado</span>
                 ) : (
-                  <span className="tag-mono" style={{ color: 'var(--color-rust)', borderColor: 'var(--color-rust)' }}>
-                    ◌ aberto
-                  </span>
+                  <span className="status-pill status-open">Aberto</span>
                 )}
               </div>
 
-              <h4 className="serif-display text-[24px] leading-tight" style={{ color: 'var(--color-ink)' }}>
+              <h4 className="serif-display text-xl leading-tight" style={{ color: 'var(--color-ink)' }}>
                 {req.patientName}
               </h4>
 
-              <div className="flex items-center gap-3 mt-1">
-                <span className="kicker flex items-center gap-1">
-                  <MapPin size={9} strokeWidth={1.5} />
+              <div className="flex items-center gap-1.5 mt-1.5">
+                <MapPin size={12} strokeWidth={1.5} style={{ color: 'var(--color-ink-4)' }} />
+                <span className="text-xs" style={{ color: 'var(--color-ink-3)' }}>
                   {req.neighborhood}, {req.city}
                 </span>
               </div>
 
-              <div className="rule my-3"></div>
+              <div className="rule my-3" />
 
-              <p className="font-display italic text-[15px] leading-relaxed line-clamp-3" style={{ color: 'var(--color-ink-2)' }}>
+              <p className="text-sm leading-relaxed line-clamp-2" style={{ color: 'var(--color-ink-2)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
                 "{req.description}"
               </p>
 
-              <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px dashed rgba(26,22,18,0.18)' }}>
+              <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px dashed rgba(26,22,18,0.10)' }}>
                 <div>
-                  <span className="kicker block">Receita resumida</span>
-                  <span className="font-mono text-[13px] mt-0.5 block" style={{ color: 'var(--color-sage)' }}>
+                  <span className="kicker text-xs" style={{ fontSize: '10px' }}>Receita resumida</span>
+                  <span className="font-mono text-sm mt-0.5 block" style={{ color: 'var(--color-sage)' }}>
                     {req.prescriptionSummary || '—'}
                   </span>
                 </div>

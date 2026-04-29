@@ -1,70 +1,19 @@
-import { AlertTriangle } from 'lucide-react';
+import { motion } from 'motion/react';
 
-interface ModalReportProps {
-  show: boolean;
-  onClose: () => void;
-  reason: string;
-  setReason: (r: string) => void;
-  onSubmit: () => void;
-}
-
-const reasons = [
-  { value: 'not_glasses', label: 'Não é óculos de grau' },
-  { value: 'spam',        label: 'Spam ou propaganda' },
-  { value: 'offensive',   label: 'Conteúdo ofensivo' },
-  { value: 'fraud',       label: 'Suspeita de fraude' },
-];
+interface ModalReportProps { show: boolean; onClose: () => void; reason: string; setReason: (r: string) => void; onSubmit: () => void; }
 
 export function ModalReport({ show, onClose, reason, setReason, onSubmit }: ModalReportProps) {
   if (!show) return null;
-
   return (
-    <div
-      className="absolute inset-0 z-[80] flex items-center justify-center p-6"
-      style={{ background: 'rgba(26,22,18,0.85)', backdropFilter: 'blur(8px)' }}
-    >
-      <div
-        className="w-full max-w-sm relative paper-grain hairline-strong p-7"
-        style={{ background: 'var(--color-paper)' }}
-      >
-        <div className="flex items-center gap-3 mb-1 relative z-10">
-          <AlertTriangle size={20} strokeWidth={1.5} style={{ color: 'var(--color-rust)' }} />
-          <span className="kicker kicker-rust">— denúncia editorial —</span>
-        </div>
-        <h3 className="serif-display text-[28px] mt-2 relative z-10" style={{ color: 'var(--color-ink)' }}>
-          Reportar este <span className="italic">anúncio</span>
-        </h3>
-        <p className="font-display italic text-[14px] mt-1 mb-5 relative z-10" style={{ color: 'var(--color-ink-3)' }}>
-          Selecione o motivo. Sua identidade não será revelada.
-        </p>
-        <div className="rule-double mb-5 relative z-10"></div>
-
-        <div className="space-y-2 mb-6 relative z-10">
-          {reasons.map((r) => {
-            const active = reason === r.value;
-            return (
-              <button
-                key={r.value}
-                onClick={() => setReason(r.value)}
-                className="w-full text-left px-4 py-3 hairline transition-colors flex items-center gap-3"
-                style={{
-                  background: active ? 'var(--color-ink)' : 'var(--color-paper)',
-                  color: active ? 'var(--color-paper)' : 'var(--color-ink)',
-                  borderColor: active ? 'var(--color-ink)' : undefined,
-                }}
-              >
-                <span className="numeral text-[10px] opacity-60">{active ? '◆' : '◇'}</span>
-                <span className="font-display text-[15px]">{r.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex gap-3 relative z-10">
-          <button onClick={onClose} className="btn-ghost flex-1">Cancelar</button>
-          <button onClick={onSubmit} disabled={!reason} className="btn-rust flex-1">Denunciar</button>
-        </div>
-      </div>
+    <div className="absolute inset-0 z-[70] flex items-end justify-center" style={{ background: 'rgba(24,20,15,0.5)' }} onClick={onClose}>
+      <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} onClick={(e) => e.stopPropagation()} className="w-full rounded-t-3xl p-6 safe-bottom" style={{ background: 'var(--color-paper)' }}>
+        <div className="drag-indicator mb-6" />
+        <h3 className="serif-display text-2xl text-center" style={{ color: 'var(--color-ink)' }}>Denunciar conteúdo</h3>
+        <p className="text-sm text-center mt-2 mb-5" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>Descreva o motivo da denúncia.</p>
+        <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo da denúncia…" className="field-paper w-full" />
+        <button onClick={onSubmit} className="btn-rust w-full mt-4">Enviar denúncia →</button>
+        <button onClick={onClose} className="btn-ghost w-full mt-2">Cancelar</button>
+      </motion.div>
     </div>
   );
 }

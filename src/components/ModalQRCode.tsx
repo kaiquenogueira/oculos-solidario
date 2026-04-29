@@ -1,53 +1,22 @@
-import { X } from 'lucide-react';
-import { QRCodeCanvas } from 'qrcode.react';
+import { motion } from 'motion/react';
 
-interface ModalQRCodeProps {
-  show: boolean;
-  onClose: () => void;
-  value: string;
-  title: string;
-  description: string;
-}
+interface ModalQRCodeProps { show: boolean; onClose: () => void; value: string; title: string; description: string; }
 
 export function ModalQRCode({ show, onClose, value, title, description }: ModalQRCodeProps) {
   if (!show) return null;
-
   return (
-    <div
-      className="absolute inset-0 z-[70] flex items-center justify-center p-6"
-      style={{ background: 'rgba(26,22,18,0.85)', backdropFilter: 'blur(8px)' }}
-    >
-      <div
-        className="w-full max-w-sm relative paper-grain hairline-strong p-7"
-        style={{ background: 'var(--color-paper)' }}
-      >
-        <div className="flex items-baseline justify-between mb-4 relative z-10">
-          <span className="kicker kicker-rust">— ticket de retirada —</span>
-          <button onClick={onClose} aria-label="Fechar">
-            <X size={16} strokeWidth={1.5} style={{ color: 'var(--color-ink)' }} />
-          </button>
-        </div>
-
-        <h3 className="serif-display text-[28px] mb-2 relative z-10" style={{ color: 'var(--color-ink)' }}>
-          {title}
-        </h3>
-        <div className="rule-double mb-5 relative z-10"></div>
-
-        <div className="flex justify-center mb-5 relative z-10">
-          <div className="p-4 hairline-strong" style={{ background: 'var(--color-paper)' }}>
-            <QRCodeCanvas value={value} size={196} fgColor="#1A1612" bgColor="#F5EFE4" />
+    <div className="absolute inset-0 z-[70] flex items-end justify-center" style={{ background: 'rgba(24,20,15,0.5)' }} onClick={onClose}>
+      <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 28, stiffness: 220 }} onClick={(e) => e.stopPropagation()} className="w-full rounded-t-3xl p-6 safe-bottom" style={{ background: 'var(--color-paper)' }}>
+        <div className="drag-indicator mb-6" />
+        <h3 className="serif-display text-2xl text-center" style={{ color: 'var(--color-ink)' }}>{title}</h3>
+        <p className="text-sm text-center mt-2" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>{description}</p>
+        <div className="mt-6 mb-4 flex justify-center">
+          <div className="w-48 h-48 rounded-2xl flex items-center justify-center" style={{ background: 'var(--color-paper-2)', border: '1px solid rgba(26,22,18,0.08)' }}>
+            <span className="font-mono text-xs text-center" style={{ color: 'var(--color-ink-4)' }}>QR: {value.slice(0, 8)}…</span>
           </div>
         </div>
-
-        <p className="font-display italic text-center text-[15px] leading-snug mb-2 relative z-10" style={{ color: 'var(--color-ink-2)' }}>
-          {description}
-        </p>
-        <p className="kicker text-center mb-6 relative z-10">— válido por 24 horas —</p>
-
-        <button onClick={onClose} className="btn-ghost w-full relative z-10">
-          Fechar
-        </button>
-      </div>
+        <button onClick={onClose} className="btn-ghost w-full mt-2">Fechar</button>
+      </motion.div>
     </div>
   );
 }

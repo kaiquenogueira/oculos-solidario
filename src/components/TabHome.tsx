@@ -17,49 +17,68 @@ export function TabHome({ user, ads, onSelectAd, onOpenNotifications, onOpenMap 
   const today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
 
   return (
-    <div className="pb-28 pt-10">
+    <div className="pb-32 safe-top pt-4">
       {/* Masthead */}
-      <header className="px-6 pb-3">
-        <div className="flex items-start justify-between mb-4">
+      <header className="px-5 pb-4">
+        <div className="flex items-start justify-between mb-3">
           <div>
             <span className="kicker">{today}</span>
             <h1
-              className="serif-display mt-1"
-              style={{ fontSize: '40px', color: 'var(--color-ink)', lineHeight: 0.95 }}
+              className="serif-display mt-1.5"
+              style={{ fontSize: '36px', color: 'var(--color-ink)', lineHeight: 0.95 }}
             >
               Olá, <span className="italic" style={{ color: 'var(--color-rust)' }}>{user?.name.split(' ')[0]}</span>.
             </h1>
           </div>
           <button
             onClick={onOpenNotifications}
-            className="hairline w-10 h-10 flex items-center justify-center relative"
-            style={{ background: 'var(--color-paper)' }}
+            className="w-11 h-11 flex items-center justify-center relative rounded-full"
+            style={{ background: 'var(--color-paper-2)' }}
             aria-label="Notificações"
           >
-            <Bell size={16} style={{ color: 'var(--color-ink)' }} strokeWidth={1.5} />
+            <Bell size={18} style={{ color: 'var(--color-ink)' }} strokeWidth={1.6} />
             <span
-              className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full"
-              style={{ background: 'var(--color-rust)' }}
+              className="absolute top-2 right-2.5 w-2 h-2 rounded-full"
+              style={{ background: 'var(--color-rust)', boxShadow: '0 0 0 2px var(--color-paper)' }}
             />
           </button>
         </div>
 
-        <p className="font-display text-base italic max-w-[80%]" style={{ color: 'var(--color-ink-3)' }}>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-ink-3)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
           Hoje há {activeAds.length} {activeAds.length === 1 ? 'armação à espera' : 'armações à espera'} de novos olhos.
         </p>
       </header>
 
-      <div className="rule-double mx-6 my-5"></div>
-
-      {/* Editorial — Tip of the day */}
-      <section className="px-6 mb-8">
-        <div className="flex items-baseline gap-3 mb-3">
-          <span className="numeral text-[11px]" style={{ color: 'var(--color-rust)' }}>§ 01</span>
-          <span className="kicker">Coluna · Cuidado com a vista</span>
-        </div>
-
+      {/* Quick stats */}
+      <div className="flex gap-3 px-5 mb-6">
         <div
-          className="relative overflow-hidden p-6 grain-overlay"
+          className="flex-1 p-4 rounded-2xl"
+          style={{ background: 'var(--color-rust-bg)' }}
+        >
+          <span className="eye-mark text-3xl" style={{ color: 'var(--color-rust)' }}>{activeAds.filter(a => a.type === 'donation').length}</span>
+          <p className="kicker mt-1 text-xs" style={{ color: 'var(--color-rust)', fontSize: '10px' }}>Doações</p>
+        </div>
+        <div
+          className="flex-1 p-4 rounded-2xl"
+          style={{ background: 'var(--color-sage-bg)' }}
+        >
+          <span className="eye-mark text-3xl" style={{ color: 'var(--color-sage)' }}>{activeAds.filter(a => a.type === 'exchange').length}</span>
+          <p className="kicker mt-1 text-xs" style={{ color: 'var(--color-sage)', fontSize: '10px' }}>Trocas</p>
+        </div>
+        <button
+          onClick={onOpenMap}
+          className="flex-1 p-4 rounded-2xl flex flex-col items-center justify-center"
+          style={{ background: 'var(--color-paper-2)' }}
+        >
+          <MapPin size={22} strokeWidth={1.5} style={{ color: 'var(--color-ink-3)' }} />
+          <p className="kicker mt-1 text-xs" style={{ fontSize: '10px' }}>Ver mapa</p>
+        </button>
+      </div>
+
+      {/* Editorial tip card */}
+      <section className="px-5 mb-8">
+        <div
+          className="relative overflow-hidden p-5 rounded-2xl grain-overlay"
           style={{
             background: 'linear-gradient(135deg, var(--color-ink) 0%, #2a221b 100%)',
             color: 'var(--color-paper)',
@@ -67,136 +86,137 @@ export function TabHome({ user, ads, onSelectAd, onOpenNotifications, onOpenMap 
         >
           <div className="flex items-start justify-between gap-4 relative z-10">
             <div className="flex-1">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-rust-soft)' }} />
+                <span className="kicker" style={{ color: 'var(--color-paper-3)', opacity: 0.7, fontSize: '10px' }}>Coluna · Cuidado com a vista</span>
+              </div>
               <p
-                className="font-display text-[26px] leading-tight"
+                className="font-display text-xl leading-snug"
                 style={{ fontVariationSettings: '"opsz" 144, "SOFT" 30, "WONK" 1' }}
               >
                 "Antes de trocar as <span className="italic" style={{ color: 'var(--color-rust-soft)' }}>lentes</span>, troque o <span className="italic">exame</span>."
               </p>
-              <div className="flex items-center gap-2 mt-5">
-                <span className="kicker" style={{ color: 'var(--color-paper-3)', opacity: 0.7 }}>— Editorial</span>
-                <button
-                  className="font-mono text-[10px] tracking-[0.2em] uppercase pb-0.5"
-                  style={{
-                    color: 'var(--color-rust-soft)',
-                    borderBottom: '1px solid var(--color-rust-soft)',
-                  }}
-                >
-                  Continuar lendo
-                </button>
-              </div>
+              <button
+                className="mt-4 inline-flex items-center gap-2 text-xs tracking-wider uppercase py-2 px-4 rounded-full"
+                style={{
+                  background: 'rgba(245,239,228,0.12)',
+                  color: 'var(--color-rust-soft)',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                Ler mais →
+              </button>
             </div>
-            <span className="eye-mark text-[64px] opacity-20" aria-hidden>20/20</span>
+            <span className="eye-mark text-5xl opacity-15" aria-hidden>20/20</span>
           </div>
         </div>
       </section>
 
       {/* Featured */}
       {featured && (
-        <section className="px-6 mb-10">
-          <div className="flex items-baseline gap-3 mb-3">
-            <span className="numeral text-[11px]" style={{ color: 'var(--color-rust)' }}>§ 02</span>
-            <span className="kicker">Em destaque · esta semana</span>
+        <section className="px-5 mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-rust)' }} />
+            <span className="kicker">Em destaque</span>
           </div>
           <motion.button
-            whileTap={{ scale: 0.99 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onSelectAd(featured)}
-            className="w-full text-left group"
+            className="w-full text-left group card-paper"
           >
-            <div className="aspect-[4/3] overflow-hidden hairline relative">
+            <div className="aspect-[16/10] overflow-hidden relative rounded-t-[20px]">
               <img src={featured.photoUrl} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-              <div className="absolute top-3 left-3 flex gap-2">
-                <span className={featured.type === 'donation' ? 'tag-rust' : 'tag-ink'}>
-                  {featured.type === 'donation' ? 'Doação' : 'Troca'}
+              <div className="absolute top-3 left-3">
+                <span className={`tag-mono ${featured.type === 'donation' ? 'tag-rust' : ''}`}>
+                  {featured.type === 'donation' ? '◆ Doação' : '◇ Troca'}
                 </span>
               </div>
-              <div className="absolute bottom-3 right-3">
-                <span className="tag-mono" style={{ background: 'var(--color-paper)' }}>
-                  <ArrowUpRight size={11} className="inline -mt-0.5" /> ver
-                </span>
+              {/* Gradient overlay for readability */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-20"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }}
+              />
+            </div>
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-display text-xl leading-tight flex-1" style={{ color: 'var(--color-ink)' }}>
+                  {featured.title}
+                </h3>
+                <ArrowUpRight size={18} strokeWidth={1.6} style={{ color: 'var(--color-ink-3)' }} className="shrink-0 mt-1" />
               </div>
-            </div>
-            <div className="pt-3 flex items-baseline justify-between gap-3">
-              <h3 className="font-display text-2xl leading-tight flex-1" style={{ color: 'var(--color-ink)' }}>
-                {featured.title}
-              </h3>
-              <span className="numeral text-[11px] shrink-0" style={{ color: 'var(--color-ink-3)' }}>
-                #{featured.id.slice(0, 4).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex items-center justify-between mt-1.5">
-              <span className="kicker flex items-center gap-1.5">
-                <MapPin size={10} strokeWidth={1.5} />
-                {featured.neighborhood}, {featured.city}
-              </span>
-              <span className="font-mono text-[10px]" style={{ color: 'var(--color-ink-4)' }}>
-                {featured.prescriptionSummary || '—'}
-              </span>
+              <div className="flex items-center gap-2 mt-2">
+                <MapPin size={12} strokeWidth={1.5} style={{ color: 'var(--color-ink-4)' }} />
+                <span className="text-xs" style={{ color: 'var(--color-ink-3)' }}>
+                  {featured.neighborhood}, {featured.city}
+                </span>
+                {featured.prescriptionSummary && (
+                  <>
+                    <span style={{ color: 'var(--color-ink-4)' }}>·</span>
+                    <span className="font-mono text-xs" style={{ color: 'var(--color-ink-4)' }}>
+                      {featured.prescriptionSummary}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </motion.button>
         </section>
       )}
 
       {/* Catalogue grid */}
-      <section className="px-6">
-        <div className="flex items-end justify-between mb-4">
-          <div>
-            <span className="numeral text-[11px]" style={{ color: 'var(--color-rust)' }}>§ 03</span>
-            <h3 className="serif-display text-[28px] mt-1" style={{ color: 'var(--color-ink)' }}>
-              Catálogo das <span className="italic">redondezas</span>
-            </h3>
+      <section className="px-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-0.5 rounded-full" style={{ background: 'var(--color-rust)' }} />
+            <span className="kicker">Catálogo</span>
           </div>
           <button
             onClick={onOpenMap}
-            className="font-mono text-[10px] tracking-[0.2em] uppercase pb-0.5 underline-grow"
-            style={{ color: 'var(--color-rust)', borderBottom: '1px solid var(--color-rust)' }}
+            className="text-xs font-medium px-3 py-1.5 rounded-full"
+            style={{
+              color: 'var(--color-rust)',
+              background: 'var(--color-rust-bg)',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.06em',
+            }}
           >
             Ver mapa →
           </button>
         </div>
 
         {rest.length === 0 ? (
-          <div className="hairline p-10 text-center" style={{ background: 'var(--color-paper-2)' }}>
-            <span className="eye-mark text-[42px]" style={{ color: 'var(--color-ink-4)' }}>—∅—</span>
-            <p className="font-display italic mt-3" style={{ color: 'var(--color-ink-3)' }}>
+          <div className="rounded-2xl p-10 text-center" style={{ background: 'var(--color-paper-2)' }}>
+            <span className="eye-mark text-4xl" style={{ color: 'var(--color-ink-4)' }}>—∅—</span>
+            <p className="font-display italic mt-3 text-sm" style={{ color: 'var(--color-ink-3)' }}>
               Nenhum item por aqui ainda.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-7">
-            {rest.map((ad, i) => (
+          <div className="grid grid-cols-2 gap-3">
+            {rest.map((ad) => (
               <motion.button
                 key={ad.id}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onSelectAd(ad)}
-                className="text-left group"
+                className="text-left group card-paper"
               >
-                <div className="aspect-square overflow-hidden hairline relative" style={{ background: 'var(--color-paper-2)' }}>
+                <div className="aspect-square overflow-hidden relative rounded-t-[20px]" style={{ background: 'var(--color-paper-2)' }}>
                   <img src={ad.photoUrl} alt={ad.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
                   <span
-                    className="absolute top-2 left-2 tag-mono"
-                    style={ad.type === 'donation'
-                      ? { background: 'var(--color-rust)', color: 'var(--color-paper)', borderColor: 'var(--color-rust)' }
-                      : { background: 'var(--color-paper)' }
-                    }
+                    className={`absolute top-2 left-2 tag-mono ${ad.type === 'donation' ? 'tag-rust' : ''}`}
+                    style={{ fontSize: '9px', padding: '3px 8px' }}
                   >
                     {ad.type === 'donation' ? '◆ doação' : '◇ troca'}
                   </span>
                 </div>
-                <div className="flex items-baseline justify-between mt-2 gap-2">
-                  <span className="numeral text-[9px]" style={{ color: 'var(--color-ink-4)' }}>
-                    {String(i + 2).padStart(2, '0')}.
-                  </span>
-                  <span className="numeral text-[9px]" style={{ color: 'var(--color-ink-4)' }}>
-                    #{ad.id.slice(0, 4).toUpperCase()}
-                  </span>
-                </div>
-                <h4 className="font-display text-[17px] leading-tight mt-0.5 line-clamp-2" style={{ color: 'var(--color-ink)' }}>
-                  {ad.title}
-                </h4>
-                <div className="flex items-center mt-1.5 text-[10px]" style={{ color: 'var(--color-ink-3)' }}>
-                  <MapPin size={9} className="mr-1" strokeWidth={1.5} />
-                  <span className="truncate">{ad.neighborhood}</span>
+                <div className="p-3">
+                  <h4 className="font-display text-sm leading-tight line-clamp-2" style={{ color: 'var(--color-ink)' }}>
+                    {ad.title}
+                  </h4>
+                  <div className="flex items-center mt-1.5 gap-1">
+                    <MapPin size={10} strokeWidth={1.5} style={{ color: 'var(--color-ink-4)' }} />
+                    <span className="text-xs truncate" style={{ color: 'var(--color-ink-4)' }}>{ad.neighborhood}</span>
+                  </div>
                 </div>
               </motion.button>
             ))}
