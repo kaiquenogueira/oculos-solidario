@@ -8,7 +8,7 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 
 ## Milestones
 
-- [ ] Milestone 1: Next.js Foundation & Database Schema Update
+- [x] Milestone 1: Next.js Foundation & Database Schema Update
 - [ ] Milestone 2: Authentication & Storage implementation
 - [ ] Milestone 3: Data Migration (Ads & Requests)
 - [ ] Milestone 4: AI Webhook Integration & Final Testing
@@ -16,9 +16,9 @@ description: Break down the Supabase + Vercel migration into actionable tasks an
 ## Task Breakdown
 
 ### Phase 1: Foundation & Setup
-- [ ] Task 1.1: Verify Next.js App Router setup and folder structure.
-- [ ] Task 1.2: Initialize Supabase Client (`src/lib/supabase/client.ts` and `server.ts`) and configure `.env`.
-- [ ] Task 1.3: Update DB Schema for Geolocation (`latitude` and `longitude` fields) in migrations.
+- [x] Task 1.1: Verify Next.js App Router setup and folder structure.
+- [x] Task 1.2: Initialize Supabase Client (`src/lib/supabase/client.ts` and `server.ts`) and configure `.env`.
+- [x] Task 1.3: Update DB Schema for Geolocation (`latitude` and `longitude` fields) in migrations.
 
 ### Phase 2: Auth & Storage
 - [ ] Task 2.1: Supabase Auth Implementation (Magic Links) replacing mock states.

@@ -10,6 +10,8 @@ create table public.users (
   photo_url text,
   rating numeric default 5.0,
   total_ratings integer default 0,
+  latitude double precision,
+  longitude double precision,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -32,6 +34,8 @@ create table public.ads (
   city text,
   state text,
   neighborhood text,
+  latitude double precision,
+  longitude double precision,
   status ad_status default 'review',
   photo_urls text[] not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
