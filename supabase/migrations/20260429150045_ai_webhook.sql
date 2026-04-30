@@ -15,7 +15,7 @@ begin
   webhook_url := current_setting('app.settings.webhook_url', true);
   
   if webhook_url is null or webhook_url = '' then
-    webhook_url := 'https://your-vercel-deployment.vercel.app/api/webhook/moderate';
+    webhook_url := 'https://oculos-solidario.vercel.app/api/webhook/moderate';
   end if;
 
   perform net.http_post(
